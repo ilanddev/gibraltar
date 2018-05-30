@@ -1,0 +1,77 @@
+{
+  "name": "gibraltar",
+  "version": "1.0.0",
+  "description": "A library for easily creating a visualization of an iland cloud virtual environment.",
+  "main": "./build/gibraltar.min.js",
+  "types": "./build/gibraltar.d.ts",
+  "author": "csnyder@iland.com",
+  "license": "MIT",
+  "scripts": {
+    "info": "npm-scripts-info",
+    "lint": "tslint --project tsconfig.json --type-check",
+    "prepublish": "webpack --debug && webpack -p && rm -r ./build/build",
+    "build": "rm -rf ./build && npm run lint && webpack",
+    "test": "jest --coverage",
+    "docs": "typedoc src/index.ts --excludePrivate --exclude **/__*__/**/* --mode file --theme minimal --out build/docs"
+  },
+  "scripts-info": {
+    "info": "Display information about the scripts",
+    "build": "(Trash and re)build the library",
+    "lint": "Lint all typescript source files",
+    "test": "Run tests",
+    "docs": "Generate HTML API documentation and open it in a browser"
+  },
+  "engines": {
+    "node": ">=4"
+  },
+  "dependencies": {
+    "iland-sdk": "git://github.com/ilanddev/javascript-sdk.git#master",
+    "paper": "^0.11.4"
+  },
+  "devDependencies": {
+    "@types/jest": "20.0.2",
+    "@types/node": "7.0.12",
+    "@types/paper": "^0.9.3",
+    "dts-bundle": "^0.7.3",
+    "file-loader": "^0.11.2",
+    "jest": "20.0.4",
+    "ts-jest": "20.0.6",
+    "ts-loader": "2.2.2",
+    "tslint": "5.5.0",
+    "tslint-config-standard": "6.0.1",
+    "typedoc": "0.7.1",
+    "typescript": "2.4.0",
+    "webpack": "3.0.0"
+  },
+  "jest": {
+    "setupTestFrameworkScriptFile": "./test-setup.js",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "transform": {
+      "\\.(ts)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "/.*.test.+(unit|int).ts$",
+    "clearMocks": true,
+    "bail": true,
+    "testPathIgnorePatterns": [
+      "/build/",
+      "/node_modules/",
+      "test-setup.js"
+    ],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/**/index.ts",
+      "!src/sdk/model/json/*.ts"
+    ],
+    "mapCoverage": true,
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test-setup.js",
+      "/__test__/.*\\.js$",
+      "/build/.*\\.(ts|js)$"
+    ]
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "outDir": "build",
+    "rootDir": ".",
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "declaration": false,
+    "importHelpers": true,
+    "sourceMap": true,
+    "listFiles": false,
+    "traceResolution": false,
+    "pretty": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny" : true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "lib" : [
+      "es6", "dom"
+    ],
+    "types" : [
+      "node"
+    ],
+    "baseUrl": ".", // required for "paths"
+    "paths": {
+      "typescript-starter": ["src/index.ts"] // write tests without relative paths
+    }
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules/**"
+  ],
+  "compileOnSave": false
+}

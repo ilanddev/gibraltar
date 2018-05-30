@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="60px" height="60px" viewBox="0 0 60 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 46.1 (44463) - http://www.bohemiancoding.com/sketch -->
+    <title>windows_rounded</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <ellipse id="path-1" cx="30" cy="30" rx="30" ry="30"/>
+    </defs>
+    <g id="Iland-Cloud" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="VM-Logo-Library" transform="translate(-43.000000, -123.000000)">
+            <g id="windows_rounded" transform="translate(43.000000, 123.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="Rectangle-13" fill="#0078D6" xlink:href="#path-1"></use>
+                <path d="M15,20.0234556 L26.5775729,18.44671 L26.5826338,29.6142161 L15.0105761,29.6801155 L15,20.0234556 Z M26.5720577,30.9009303 L26.5810441,42.078169 L15.0089864,40.4871814 L15.0083376,30.8259568 L26.5720577,30.9009303 Z M27.9755306,18.2404438 L43.3264313,16 L43.3264313,29.4721851 L27.9755306,29.5940534 L27.9755306,18.2404438 Z M43.3299999,31.0060423 L43.3263989,44.4175609 L27.9754982,42.250955 L27.9539892,30.9809322 L43.3299999,31.0060423 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero" mask="url(#mask-2)"></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -27,11 +27,11 @@ export class InternalNetworkComponent extends paper.Group {
     this.addChildren([this._path, circle]);
     this.onMouseEnter = this.mouseEnter;
     this.onMouseLeave = this.mouseLeave;
-    EventService.subscribe(INTERNAL_NETWORK_MOUSE_ENTER, this._internalNetwork.getUuid(),
+    EventService.subscribe(INTERNAL_NETWORK_MOUSE_ENTER, this._internalNetwork.uuid,
         () => {
           this._path.fillColor = HOVER_COLOR;
         });
-    EventService.subscribe(INTERNAL_NETWORK_MOUSE_LEAVE, this._internalNetwork.getUuid(),
+    EventService.subscribe(INTERNAL_NETWORK_MOUSE_LEAVE, this._internalNetwork.uuid,
         () => {
           self._path.fillColor = PATH_COLOR;
         });
@@ -50,11 +50,11 @@ export class InternalNetworkComponent extends paper.Group {
   }
 
   private mouseEnter(event: paper.MouseEvent): void {
-    EventService.dispatch(INTERNAL_NETWORK_MOUSE_ENTER, this._internalNetwork.getUuid());
+    EventService.dispatch(INTERNAL_NETWORK_MOUSE_ENTER, this._internalNetwork.uuid);
   }
 
   private mouseLeave(event: paper.MouseEvent): void {
-    EventService.dispatch(INTERNAL_NETWORK_MOUSE_LEAVE, this._internalNetwork.getUuid());
+    EventService.dispatch(INTERNAL_NETWORK_MOUSE_LEAVE, this._internalNetwork.uuid);
   }
 
 }

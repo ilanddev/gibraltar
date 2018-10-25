@@ -1,6 +1,8 @@
-import { InternalNetwork, Vapp, VappNetwork } from 'iland-sdk';
 import { VmData } from './vm-data';
 import { VappDataJson } from './json/vapp-data';
+import { VappNetwork } from 'iland-sdk';
+import { Vapp } from 'iland-sdk';
+import { InternalNetwork } from 'iland-sdk';
 
 export class VappData {
 
@@ -29,14 +31,14 @@ export class VappData {
    * @returns {boolean} value
    */
   isConnectedToInternalNetwork(internalNet: InternalNetwork): boolean {
-    return this._vappNetworks.some((n) => n.getParentNetworkUuid() === internalNet.getUuid());
+    return this._vappNetworks.some((n) => n.parentNetworkUuid === internalNet.uuid);
   }
 
   toJsonObject(): VappDataJson {
     return {
-      vapp: this._vapp.getJson(),
+      vapp: this._vapp.json,
       vms: this._vms.map(v => v.toJsonObject()),
-      vappNetworks: this._vappNetworks.map(v => v.getJson())
+      vappNetworks: this._vappNetworks.map(v => v.json)
     };
   }
 

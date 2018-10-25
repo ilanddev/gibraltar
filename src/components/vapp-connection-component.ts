@@ -8,7 +8,7 @@ import { EventService } from '../services/event-service';
 import {
   INTERNAL_NETWORK_MOUSE_ENTER, INTERNAL_NETWORK_MOUSE_LEAVE, VAPP_NETWORK_MOUSE_ENTER, VAPP_NETWORK_MOUSE_LEAVE
 } from '../constants/events';
-import { NetworkFenceMode } from 'iland-sdk';
+import { FenceModeType } from 'iland-sdk';
 
 /**
  * Virtual Application Connection Visual Component.
@@ -28,7 +28,7 @@ export class VappConnectionComponent extends paper.Group {
     this.position = _vapp.position;
     let size = 0;
     for (const vappNet of this._vapp.getVappNetworkComponents()) {
-      if (vappNet.getVappNetworkData().getParentNetworkUuid() === null) {
+      if (vappNet.getVappNetworkData().parentNetworkUuid === null) {
         const connectorCenter = new paper.Point((PATH_STROKE_WIDTH / 2) - (CONNECTOR_RADIUS) -
             (PATH_STROKE_WIDTH / 2), vappNet.bounds.center.y +
             (PATH_STROKE_WIDTH / 2));
@@ -38,7 +38,7 @@ export class VappConnectionComponent extends paper.Group {
         self._connectors.push(connector);
       } else {
         for (const intNet of this._internalNetworks) {
-          if (vappNet.getVappNetworkData().getParentNetworkUuid() === intNet.getInternalNetworkData().getUuid()) {
+          if (vappNet.getVappNetworkData().parentNetworkUuid === intNet.getInternalNetworkData().uuid) {
             const pathLength = _vapp.bounds.left - intNet.getPath().bounds.right;
             size = pathLength > size ? pathLength : size;
             const connectorCenter = new paper.Point(-pathLength -
@@ -72,10 +72,10 @@ export class VappConnectionComponent extends paper.Group {
             self._vappNetPaths.push(vappNetPath);
 
             // bind hover handlers
-            self.bindHoverHandlers(vappNet.getVappNetworkData().getUuid(), vappNetPath,
-                intNet.getInternalNetworkData().getUuid(), intNetPath, vappNet.getVappNetworkData().getFenceMode());
+            self.bindHoverHandlers(vappNet.getVappNetworkData().uuid, vappNetPath,
+                intNet.getInternalNetworkData().uuid, intNetPath, vappNet.getVappNetworkData().fenceMode);
             // add edge gateway symbol if relevant
-            if (vappNet.getVappNetworkData().getFenceMode() === 'NATROUTED') {
+            if (vappNet.getVappNetworkData().fenceMode === 'NAT_ROUTED') {
               this._edgeIcon = IconService.getEdgeIcon().place();
               this.addChild(this._edgeIcon);
               this._edgeIcon.pivot = new paper.Point(0, 0);
@@ -103,7 +103,7 @@ export class VappConnectionComponent extends paper.Group {
   }
 
   private bindHoverHandlers(vappNetUuid: string, vappNetPath: paper.Path.Rectangle, intNetUuid: string,
-                            intNetPath: paper.Path.Rectangle, fenceMode: NetworkFenceMode) {
+                            intNetPath: paper.Path.Rectangle, fenceMode: FenceModeType) {
     const mouseEnterHandler = function(path: paper.Path) {
       path.fillColor = HOVER_COLOR;
       path.data.hovered = true;

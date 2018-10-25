@@ -1,4 +1,5 @@
-import { VmJson, VnicJson } from 'iland-sdk';
+import { VmJson } from 'iland-sdk';
+import { VnicJson } from 'iland-sdk';
 
 export interface VmDataJson {
   vm: VmJson;

@@ -3,7 +3,8 @@ import { VmComponent } from './vm-component';
 import { VappNetworkComponent } from './vapp-network-component';
 import { VappData } from '../model/vapp-data';
 import { LabelComponent } from './label-component';
-import { VappNetwork, VappPowerStatus } from 'iland-sdk';
+import { VappNetwork } from 'iland-sdk';
+import { VappPowerStatus } from 'iland-sdk';
 import { VnicNetConnectionComponent } from './vnic-net-connection-component';
 import { POWER_MIXED_COLOR, POWERED_OFF_COLOR, POWERED_ON_COLOR, VAPP_BACKGROUND_COLOR } from '../constants/colors';
 import { LABEL_HEIGHT, VAPP_BACKGROUND_PADDING } from '../constants/dimensions';
@@ -33,8 +34,8 @@ export class VappComponent extends paper.Group {
     this.applyMatrix = false;
     this.pivot = new paper.Point(0, 0);
     this.position = _point;
-    this._label = new LabelComponent(this._vapp.getVapp().getName(), undefined,
-        this.getColorForVappStatus(this._vapp.getVapp().getPowerStatus()));
+    this._label = new LabelComponent(this._vapp.getVapp().name, undefined,
+        this.getColorForVappStatus(this._vapp.getVapp().powerStatus));
     this.addChild(this._label);
     let idx = 0;
     for (const vm of _vapp.getVmsData()) {
@@ -53,7 +54,7 @@ export class VappComponent extends paper.Group {
       this.addChild(vappNetworkComponent);
       for (const vm of this._vmComponents) {
         for (const vnic of vm.getVnicComponents()) {
-          if (vnic.getVnic().getConnectedNetworkName() === vappNetwork.getName()) {
+          if (vnic.getVnic().connectedNetworkName === vappNetwork.name) {
             const pos = this.globalToLocal(vm.localToGlobal(vnic.bounds.bottomCenter));
             const vnicCnx = new VnicNetConnectionComponent(vnic, vappNetworkComponent, pos);
             this._vnicConnections.push(vnicCnx);
@@ -142,7 +143,7 @@ export class VappComponent extends paper.Group {
     for (let vm of this._vmComponents.slice(0).reverse()) {
       if (vm.getVnicComponents().length > 0) {
         const connectedVnics = vm.getVnicComponents()
-                                 .filter(v => v.getVnic().getConnectedNetworkName() === net.getName());
+                                 .filter(v => v.getVnic().connectedNetworkName === net.name);
         if (connectedVnics.length > 0) {
           return this.globalToLocal(vm.localToGlobal(connectedVnics[connectedVnics.length - 1].bounds.center)).x;
         }

@@ -68,23 +68,23 @@ export class OrgItem extends paper.Group {
   }
 
   private sortInternalNetworks(one: InternalNetwork, two: InternalNetwork): number {
-    switch (one.getFenceMode()) {
+    switch (one.fenceMode) {
       case 'BRIDGED':
-        if (two.getFenceMode() === 'BRIDGED') {
+        if (two.fenceMode === 'BRIDGED') {
           return 0;
         } else {
           return 1;
         }
-      case 'NATROUTED':
-        if (two.getFenceMode() === 'NATROUTED') {
+      case 'NAT_ROUTED':
+        if (two.fenceMode === 'NAT_ROUTED') {
           return 0;
-        } else if (two.getFenceMode() === 'BRIDGED') {
+        } else if (two.fenceMode === 'BRIDGED') {
           return -1;
         } else {
           return 1;
         }
       case 'ISOLATED':
-        if (two.getFenceMode() === 'ISOLATED') {
+        if (two.fenceMode === 'ISOLATED') {
           return 0;
         } else {
           return -1;

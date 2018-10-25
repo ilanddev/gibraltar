@@ -30,9 +30,9 @@ export class OrgNetworksConnectionComponent extends paper.Group {
     this.position = new paper.Point(0, 0);
     const natRoutedMap: Map<string, Array<InternalNetworkComponent>> = new Map();
     for (const intNet of this._internalNetworks) {
-      switch (intNet.getInternalNetworkData().getFenceMode()) {
-        case 'NATROUTED': {
-          const edgeUuid = intNet.getInternalNetworkData().getEdgeUuid()!;
+      switch (intNet.getInternalNetworkData().fenceMode) {
+        case 'NAT_ROUTED': {
+          const edgeUuid = intNet.getInternalNetworkData().edgeUuid!;
           if (!natRoutedMap.has(edgeUuid!)) {
             natRoutedMap.set(edgeUuid, [intNet]);
           } else {
@@ -50,12 +50,12 @@ export class OrgNetworksConnectionComponent extends paper.Group {
           const circle = new paper.Path.Circle(path.bounds.topCenter, CONNECTOR_RADIUS);
           circle.fillColor = CONNECTOR_COLOR;
           this.addChild(circle);
-          this.bindIsolatedHoverHandlers(intNet.getInternalNetworkData().getUuid(), path);
+          this.bindIsolatedHoverHandlers(intNet.getInternalNetworkData().uuid, path);
           break;
         }
         case 'BRIDGED': {
           const extNet = _externalNetworks.find(
-              n => n.getExternalNetworkData().uuid === intNet.getInternalNetworkData().getParentNetworkUuid());
+              n => n.getExternalNetworkData().uuid === intNet.getInternalNetworkData().parentNetworkUuid);
           const y = extNet!.localToParent(extNet!.getPath().bounds.center).y;
           let size = new paper.Size(PATH_STROKE_WIDTH, y);
           const path = new paper.Path.Rectangle(intNet.getPath().bounds.topLeft, size);
@@ -69,7 +69,7 @@ export class OrgNetworksConnectionComponent extends paper.Group {
           connector.strokeWidth = PATH_STROKE_WIDTH;
           this.addChild(connector);
           this.bindBridgedHoverHandlers(extNet!.getExternalNetworkData().uuid,
-              intNet.getInternalNetworkData().getUuid(), path);
+              intNet.getInternalNetworkData().uuid, path);
           break;
         }
       }
@@ -100,13 +100,13 @@ export class OrgNetworksConnectionComponent extends paper.Group {
         pathTo.strokeColor = PATH_COLOR;
         pathTo.strokeWidth = PATH_STROKE_WIDTH;
         self.addChild(pathTo);
-        self.bindInternalNatRoutedHoverHandlers(net.getInternalNetworkData().getUuid(), path, pathTo);
+        self.bindInternalNatRoutedHoverHandlers(net.getInternalNetworkData().uuid, path, pathTo);
       }
-      const edge = _edges.find(e => e.getUuid() === edgeUuid)!;
-      const uplinks = edge.getInterfaces().filter(i => i.getType() === 'uplink');
+      const edge = _edges.find(e => e.uuid === edgeUuid)!;
+      const uplinks = edge.interfaces.filter(i => i.type === 'uplink');
       for (const uplink of uplinks) {
         const x = centerX - (((uplinks.length - 1) / 2) * UPLINK_SPACING) - (PATH_STROKE_WIDTH / 2);
-        const extNet = _externalNetworks.find(n => n.getExternalNetworkData().uuid === uplink.getNetworkUuid());
+        const extNet = _externalNetworks.find(n => n.getExternalNetworkData().uuid === uplink.networkUuid);
         const extNetY = extNet!.localToParent(extNet!.getPath().bounds.center).y;
         let size = new paper.Size(PATH_STROKE_WIDTH, (extNetY - (centerY - 30)));
         const lowPoint = new paper.Point(x, centerY - 30);
@@ -129,7 +129,7 @@ export class OrgNetworksConnectionComponent extends paper.Group {
         connector.strokeColor = CONNECTOR_COLOR;
         connector.strokeWidth = PATH_STROKE_WIDTH;
         self.addChild(connector);
-        self.bindExternalNatRoutedHoverHandlers(uplink.getNetworkUuid(), path, pathTo);
+        self.bindExternalNatRoutedHoverHandlers(uplink.networkUuid!, path, pathTo);
       }
       const edgeIcon = IconService.getEdgeIcon().place();
       self.addChild(edgeIcon);

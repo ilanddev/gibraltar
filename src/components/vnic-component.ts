@@ -13,7 +13,7 @@ export class VnicComponent extends paper.Group {
   constructor(private _vnic: Vnic) {
     super();
     this.applyMatrix = false;
-    if (_vnic.isConnected()) {
+    if (_vnic.isConnected) {
       this._circle = new paper.Path.Circle(new paper.Point(0, 0), CONNECTOR_RADIUS);
       this._circle.fillColor = CONNECTOR_COLOR;
     } else {

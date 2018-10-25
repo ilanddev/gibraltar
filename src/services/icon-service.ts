@@ -1,8 +1,8 @@
 import * as paper from 'paper';
 import { OperatingSystem } from 'iland-sdk';
 
-const DEFAULT_ICON = require('file-loader!../assets/icons/genericvmicon.svg');
-const EDGE_ICON = require('file-loader!../assets/icons/edge.svg');
+const DEFAULT_ICON = require('../assets/icons/genericvmicon.svg');
+const EDGE_ICON = require('../assets/icons/edge.svg');
 
 export abstract class IconService {
 
@@ -54,7 +54,7 @@ export abstract class IconService {
     switch (os) {
       case 'ubuntuGuest' as OperatingSystem:
       case 'ubuntu64Guest' as OperatingSystem:
-        return require('file-loader!../assets/icons/ubuntu.svg');
+        return require('../assets/icons/ubuntu.svg');
       case 'win2000AdvServGuest':
       case 'win2000ProGuest':
       case 'win2000ServGuest':
@@ -85,11 +85,11 @@ export abstract class IconService {
       case 'winNTGuest':
       case 'winVista64Guest':
       case 'winVistaGuest':
-        return require('file-loader!../assets/icons/windows.svg');
+        return require('../assets/icons/windows.svg');
       case 'winXPHomeGuest':
       case 'winXPPro64Guest':
       case 'winXPProGuest':
-        return require('file-loader!../assets/icons/windowsxp.svg');
+        return require('../assets/icons/windowsxp.svg');
       case 'debian4_64Guest':
       case 'debian4Guest':
       case 'debian5_64Guest':
@@ -100,18 +100,18 @@ export abstract class IconService {
       case 'debian7Guest':
       case 'debian8_64Guest':
       case 'debian8Guest':
-        return require('file-loader!../assets/icons/debian.svg');
+        return require('../assets/icons/debian.svg');
       case 'coreos64Guest':
-        return require('file-loader!../assets/icons/coreos.svg');
+        return require('../assets/icons/coreos.svg');
       case 'centos64Guest':
       case 'centosGuest':
-        return require('file-loader!../assets/icons/centos.svg');
+        return require('../assets/icons/centos.svg');
       case 'fedora64Guest':
       case 'fedoraGuest':
-        return require('file-loader!../assets/icons/fedora.svg');
+        return require('../assets/icons/fedora.svg');
       case 'freebsd64Guest':
       case 'freebsdGuest':
-        return require('file-loader!../assets/icons/freebsd.svg');
+        return require('../assets/icons/freebsd.svg');
       case 'redhatGuest':
       case 'rhel2Guest':
       case 'rhel3_64Guest':
@@ -124,7 +124,7 @@ export abstract class IconService {
       case 'rhel6Guest':
       case 'rhel7_64Guest':
       case 'rhel7Guest':
-        return require('file-loader!../assets/icons/redhat.svg');
+        return require('../assets/icons/redhat.svg');
       case 'other24xLinux64Guest':
       case 'other24xLinuxGuest':
       case 'other26xLinux64Guest':
@@ -137,7 +137,7 @@ export abstract class IconService {
       case 'oracleLinuxGuest':
       case 'suse64Guest':
       case 'suseGuest':
-        return require('file-loader!../assets/icons/linux.svg');
+        return require('../assets/icons/linux.svg');
       default:
         return DEFAULT_ICON;
     }

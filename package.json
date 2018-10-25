@@ -2,15 +2,15 @@
   "name": "gibraltar",
   "version": "1.0.0",
   "description": "A library for easily creating a visualization of an iland cloud virtual environment.",
-  "main": "./build/gibraltar.min.js",
+  "main": "./build/gibraltar.js",
   "types": "./build/gibraltar.d.ts",
   "author": "csnyder@iland.com",
   "license": "MIT",
   "scripts": {
     "info": "npm-scripts-info",
     "lint": "tslint --project tsconfig.json --type-check",
-    "prepublish": "webpack --debug && webpack -p && rm -r ./build/build",
-    "build": "rm -rf ./build && npm run lint && webpack",
+    "prepare": "npm run build",
+    "build": "rm -rf ./build && npm run lint && webpack --debug && webpack -p",
     "test": "jest --coverage",
     "docs": "typedoc src/index.ts --excludePrivate --exclude **/__*__/**/* --mode file --theme minimal --out build/docs"
   },
@@ -24,14 +24,16 @@
   "engines": {
     "node": ">=4"
   },
-  "dependencies": {
-    "iland-sdk": "git://github.com/ilanddev/javascript-sdk.git#master",
-    "paper": "^0.11.4"
+  "peerDependencies": {
+    "iland-sdk": "1.x",
+    "paper": "0.x"
   },
   "devDependencies": {
     "@types/jest": "20.0.2",
     "@types/node": "7.0.12",
     "@types/paper": "^0.9.3",
+    "iland-sdk": "1.0.1",
+    "paper": "0.x",
     "dts-bundle": "^0.7.3",
     "file-loader": "^0.11.2",
     "jest": "20.0.4",

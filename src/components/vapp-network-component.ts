@@ -27,19 +27,19 @@ export class VappNetworkComponent extends paper.Group {
     this._path.fillColor = PATH_COLOR;
     this._path.applyMatrix = false;
     this._path.pivot = new paper.Point(0, 0);
-    this._label = new LabelComponent(_vappNetwork.getName());
+    this._label = new LabelComponent(_vappNetwork.name);
     this.addChild(this._path);
     this.addChild(this._label);
     this._label.pivot = new paper.Point(0, 0);
     this._label.position = new paper.Point(LABEL_OFFSET, -(LABEL_HEIGHT / 2));
     this.onMouseEnter = this.mouseEnter;
     this.onMouseLeave = this.mouseLeave;
-    EventService.subscribe(VAPP_NETWORK_MOUSE_ENTER, this._vappNetwork.getUuid()!,
+    EventService.subscribe(VAPP_NETWORK_MOUSE_ENTER, this._vappNetwork.uuid!,
         function() {
           self._label.setHover();
           self._path.fillColor = HOVER_COLOR;
         });
-    EventService.subscribe(VAPP_NETWORK_MOUSE_LEAVE, this._vappNetwork.getUuid()!,
+    EventService.subscribe(VAPP_NETWORK_MOUSE_LEAVE, this._vappNetwork.uuid!,
         function() {
           self._label.setNormal();
           self._path.fillColor = PATH_COLOR;
@@ -59,11 +59,11 @@ export class VappNetworkComponent extends paper.Group {
   }
 
   private mouseEnter(event: paper.MouseEvent): void {
-    EventService.dispatch(VAPP_NETWORK_MOUSE_ENTER, this._vappNetwork.getUuid());
+    EventService.dispatch(VAPP_NETWORK_MOUSE_ENTER, this._vappNetwork.uuid);
   }
 
   private mouseLeave(event: paper.MouseEvent): void {
-    EventService.dispatch(VAPP_NETWORK_MOUSE_LEAVE, this._vappNetwork.getUuid());
+    EventService.dispatch(VAPP_NETWORK_MOUSE_LEAVE, this._vappNetwork.uuid);
   }
 
 }

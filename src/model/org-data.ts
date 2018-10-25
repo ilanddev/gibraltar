@@ -1,4 +1,6 @@
-import { Edge, InternalNetwork, Org } from 'iland-sdk';
+import { Edge } from 'iland-sdk';
+import { InternalNetwork } from 'iland-sdk';
+import { Org } from 'iland-sdk';
 import { VappData } from './vapp-data';
 import { OrgDataJson } from './json/org-data';
 
@@ -49,16 +51,16 @@ export class OrgData {
   getExternalNetworks(): Array<ExternalNetwork> {
     const nets = new Map();
     for (const edge of this._edges) {
-      for (const i of edge.getInterfaces()) {
-        if (i.getType() === 'uplink') {
-          nets.set(i.getNetworkUuid(), new ExternalNetwork(i.getNetworkUuid(), i.getNetworkName()));
+      for (const i of edge.interfaces) {
+        if (i.type === 'uplink') {
+          nets.set(i.networkUuid, new ExternalNetwork(i.networkUuid!, i.networkName!));
         }
       }
     }
     for (const intNet of this._internalNetworks) {
-      if (intNet.getFenceMode() === 'BRIDGED' && !nets.has(intNet.getParentNetworkUuid())) {
-        nets.set(intNet.getParentNetworkUuid(),
-            new ExternalNetwork(intNet.getParentNetworkUuid()!, intNet.getGatewayAddress()));
+      if (intNet.fenceMode === 'BRIDGED' && !nets.has(intNet.parentNetworkUuid)) {
+        nets.set(intNet.parentNetworkUuid,
+            new ExternalNetwork(intNet.parentNetworkUuid!, intNet.gatewayAddress));
       }
     }
     return Array.from(nets.values());
@@ -66,10 +68,10 @@ export class OrgData {
 
   toJsonObject(): OrgDataJson {
     return {
-      org: this._org.getJson(),
+      org: this._org.json,
       vapps: this._vapps.map(v => v.toJsonObject()),
-      edges: this._edges.map(e => e.getJson()),
-      internalNetworks: this._internalNetworks.map(i => i.getJson())
+      edges: this._edges.map(e => e.json),
+      internalNetworks: this._internalNetworks.map(i => i.json)
     };
   }
 

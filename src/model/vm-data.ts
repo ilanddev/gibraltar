@@ -1,5 +1,6 @@
-import { Vm, Vnic } from 'iland-sdk';
 import { VmDataJson } from './json/vm-data';
+import { Vm } from 'iland-sdk';
+import { Vnic } from 'iland-sdk';
 
 export class VmData {
 
@@ -19,8 +20,8 @@ export class VmData {
 
   toJsonObject(): VmDataJson {
     return {
-      vm: this._vm.getJson(),
-      vnics: this._vnics.map(v => v.getJson())
+      vm: this._vm.json,
+      vnics: this._vnics.map(v => v.json)
     };
   }
 

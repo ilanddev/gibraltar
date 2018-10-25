@@ -31,9 +31,9 @@ export class VmComponent extends paper.Group {
       this._vnicComponents.push(vnicItem);
       idx++;
     }
-    self._label = new IconLabelComponent(self._vm.getVm().getName(),
-        IconService.getOperatingSystemIcon(this._vm.getVm().getOperatingSystem()),
-        undefined, self.getColorForVmStatus(self._vm.getVm().getPowerStatus()));
+    self._label = new IconLabelComponent(self._vm.getVm().name,
+        IconService.getOperatingSystemIcon(this._vm.getVm().operatingSystem),
+        undefined, self.getColorForVmStatus(self._vm.getVm().powerStatus));
     self._label.position = new paper.Point(_vm.getVnics().length * VNIC_SPACING, 0);
     self.addChild(self._label);
     self.onMouseEnter = self.mouseEnter;

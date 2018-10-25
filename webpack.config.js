@@ -24,6 +24,20 @@ var config = {
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
+  externals: {
+    "iland-sdk": {
+      commonjs: "iland-sdk",
+      commonjs2: "iland-sdk",
+      amd: "iland-sdk",
+      root: "iland-sdk"
+    },
+    "paper": {
+      commonjs: "paper",
+      commonjs2: "paper",
+      amd: "paper",
+      root: "paper"
+    }
+  },
   resolve: {
     // Add '.ts' and '.tsx' as a resolvable extension.
     extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
@@ -37,7 +51,17 @@ var config = {
       },
       {
         test: /\.png$/,
-        loader: "file-loader"
+        loader: "file-loader",
+        options: {
+          outputPath: 'assets/'
+        }
+      },
+      {
+        test: /\.svg$/,
+        loader: "file-loader",
+        options: {
+          outputPath: 'assets/'
+        }
       }
     ]
   },

@@ -23,10 +23,10 @@ export abstract class DataService {
           return Promise.all(vmPromises).then(function(vms) {
             const vappVmMap: Map<string, Array<VmData>> = new Map();
             for (const vm of vms) {
-              if (vappVmMap.get(vm.getVm().getVappUuid()) === undefined) {
-                vappVmMap.set(vm.getVm().getVappUuid(), []);
+              if (vappVmMap.get(vm.getVm().vappUuid) === undefined) {
+                vappVmMap.set(vm.getVm().vappUuid, []);
               }
-              vappVmMap.get(vm.getVm().getVappUuid())!.push(vm);
+              vappVmMap.get(vm.getVm().vappUuid)!.push(vm);
             }
             return vappVmMap;
           });
@@ -36,8 +36,8 @@ export abstract class DataService {
           for (const vapp of vapps) {
             vappNetPromises.push(vappNetworksPromise.then(function(vappNetworks) {
               return vappVmsPromise.then(function(vappVms) {
-                return new VappData(vapp, vappVms.has(vapp.getUuid()) ? vappVms.get(vapp.getUuid())! : [],
-                    vappNetworks.filter(v => v.getVappUuid() === vapp.getUuid()));
+                return new VappData(vapp, vappVms.has(vapp.uuid) ? vappVms.get(vapp.uuid)! : [],
+                    vappNetworks.filter(v => v.vappUuid === vapp.uuid));
               });
             }));
           }

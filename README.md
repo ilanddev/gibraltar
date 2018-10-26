@@ -1,4 +1,4 @@
 # Project Gibraltar
 
-Next generation UI for visualizing and interacting with the iland Cloud.
+Network visualization library for the iland Secure Cloud.
 

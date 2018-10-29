@@ -26,7 +26,8 @@
   },
   "peerDependencies": {
     "iland-sdk": "1.x",
-    "paper": "0.x"
+    "paper": "0.x",
+    "rxjs": "5.x"
   },
   "devDependencies": {
     "@types/jest": "20.0.2",
@@ -75,8 +76,5 @@
       "/__test__/.*\\.js$",
       "/build/.*\\.(ts|js)$"
     ]
-  },
-  "dependencies": {
-    "rxjs": "^5.5.12"
   }
 }

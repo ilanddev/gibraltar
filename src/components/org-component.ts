@@ -77,7 +77,7 @@ export class OrgItem extends paper.Group {
         }
       case 'NAT_ROUTED':
         if (two.fenceMode === 'NAT_ROUTED') {
-          return 0;
+          return two.edgeUuid! < one.edgeUuid! ? 1 : -1;
         } else if (two.fenceMode === 'BRIDGED') {
           return -1;
         } else {

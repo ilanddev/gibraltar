@@ -10,7 +10,7 @@
     "info": "npm-scripts-info",
     "lint": "tslint --project tsconfig.json --type-check",
     "prepare": "npm run build",
-    "build": "rm -rf ./build && npm run lint && webpack --debug && webpack -p",
+    "build": "rm -rf ./build && webpack --debug && webpack -p",
     "test": "jest --coverage",
     "docs": "typedoc src/index.ts --excludePrivate --exclude **/__*__/**/* --mode file --theme minimal --out build/docs"
   },

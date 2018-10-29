@@ -34,13 +34,13 @@ export class ExternalNetworkComponent extends paper.Group {
     this._label.position = new paper.Point(_pathLength, -(LABEL_HEIGHT / 2));
     this.onMouseEnter = this.mouseEnter;
     this.onMouseLeave = this.mouseLeave;
-    EventService.subscribe(EXTERNAL_NETWORK_MOUSE_ENTER, this._externalNetwork.uuid,
-        function() {
+    EventService.observable.filter(it => it.type === EXTERNAL_NETWORK_MOUSE_ENTER &&
+        this._externalNetwork.uuid === it.subjectUuid).subscribe(() => {
           self._label.setHover();
           self._path.fillColor = HOVER_COLOR;
         });
-    EventService.subscribe(EXTERNAL_NETWORK_MOUSE_LEAVE, this._externalNetwork.uuid,
-        function() {
+    EventService.observable.filter(it => it.type === EXTERNAL_NETWORK_MOUSE_LEAVE &&
+        this._externalNetwork.uuid === it.subjectUuid).subscribe(() => {
           self._label.setNormal();
           self._path.fillColor = PATH_COLOR;
         });

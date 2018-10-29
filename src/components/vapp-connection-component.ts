@@ -121,30 +121,34 @@ export class VappConnectionComponent extends paper.Group {
     intNetPath.onMouseLeave = vappNetPath.onMouseLeave = function() {
       EventService.dispatch(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid);
     };
-    EventService.subscribe(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid, () => {
-      mouseEnterHandler(intNetPath);
-      mouseEnterHandler(vappNetPath);
-      if (fenceMode === 'BRIDGED') {
-        EventService.dispatch(VAPP_NETWORK_MOUSE_ENTER, vappNetUuid);
-      }
-    });
-    EventService.subscribe(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid, () => {
-      mouseLeaveHandler(intNetPath);
-      mouseLeaveHandler(vappNetPath);
-      if (fenceMode === 'BRIDGED') {
-        EventService.dispatch(VAPP_NETWORK_MOUSE_LEAVE, vappNetUuid);
-      }
-    });
-    EventService.subscribe(VAPP_NETWORK_MOUSE_ENTER, vappNetUuid, () => {
-      if (fenceMode === 'BRIDGED' && !isPathHovered(intNetPath)) {
-        EventService.dispatch(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid);
-      }
-    });
-    EventService.subscribe(VAPP_NETWORK_MOUSE_LEAVE, vappNetUuid, () => {
-      if (fenceMode === 'BRIDGED' && isPathHovered(intNetPath)) {
-        EventService.dispatch(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid);
-      }
-    });
+    EventService.observable.filter(it => it.type === INTERNAL_NETWORK_MOUSE_ENTER &&
+        intNetUuid === it.subjectUuid).subscribe(() => {
+          mouseEnterHandler(intNetPath);
+          mouseEnterHandler(vappNetPath);
+          if (fenceMode === 'BRIDGED') {
+            EventService.dispatch(VAPP_NETWORK_MOUSE_ENTER, vappNetUuid);
+          }
+        });
+    EventService.observable.filter(it => it.type === INTERNAL_NETWORK_MOUSE_LEAVE &&
+        intNetUuid === it.subjectUuid).subscribe(() => {
+          mouseLeaveHandler(intNetPath);
+          mouseLeaveHandler(vappNetPath);
+          if (fenceMode === 'BRIDGED') {
+            EventService.dispatch(VAPP_NETWORK_MOUSE_LEAVE, vappNetUuid);
+          }
+        });
+    EventService.observable.filter(it => it.type === VAPP_NETWORK_MOUSE_ENTER &&
+        vappNetUuid === it.subjectUuid).subscribe(() => {
+          if (fenceMode === 'BRIDGED' && !isPathHovered(intNetPath)) {
+            EventService.dispatch(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid);
+          }
+        });
+    EventService.observable.filter(it => it.type === VAPP_NETWORK_MOUSE_LEAVE &&
+        vappNetUuid === it.subjectUuid).subscribe(() => {
+          if (fenceMode === 'BRIDGED' && isPathHovered(intNetPath)) {
+            EventService.dispatch(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid);
+          }
+        });
   }
 
 }

@@ -2,6 +2,7 @@ import { Org } from 'iland-sdk';
 import { OrgData } from '../model/org-data';
 import { VmData } from '../model/vm-data';
 import { VappData } from '../model/vapp-data';
+import { VnicData } from '../model/vnic-data';
 
 export abstract class DataService {
 
@@ -13,7 +14,8 @@ export abstract class DataService {
         const vmPromises = [];
         for (const vm of vms) {
           vmPromises.push(vm.getVnics().then(function(vnics) {
-            return new VmData(vm, vnics);
+            const vnicData = vnics.map(it => new VnicData(it, vm.uuid));
+            return new VmData(vm, vnicData);
           }));
         }
         return Promise.all(vmPromises).then(function(vms) {

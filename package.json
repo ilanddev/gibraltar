@@ -75,5 +75,8 @@
       "/__test__/.*\\.js$",
       "/build/.*\\.(ts|js)$"
     ]
+  },
+  "dependencies": {
+    "rxjs": "^5.5.12"
   }
 }

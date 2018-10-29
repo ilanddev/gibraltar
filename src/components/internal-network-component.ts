@@ -4,6 +4,7 @@ import { CONNECTOR_COLOR, HOVER_COLOR, PATH_COLOR } from '../constants/colors';
 import { CONNECTOR_RADIUS, PATH_STROKE_WIDTH } from '../constants/dimensions';
 import { EventService } from '../services/event-service';
 import { INTERNAL_NETWORK_MOUSE_ENTER, INTERNAL_NETWORK_MOUSE_LEAVE } from '../constants/events';
+import 'rxjs/add/operator/filter';
 
 /**
  * Internal Network Visual Component.
@@ -27,12 +28,13 @@ export class InternalNetworkComponent extends paper.Group {
     this.addChildren([this._path, circle]);
     this.onMouseEnter = this.mouseEnter;
     this.onMouseLeave = this.mouseLeave;
-    EventService.subscribe(INTERNAL_NETWORK_MOUSE_ENTER, this._internalNetwork.uuid,
-        () => {
+    // TODO clean up subscription in destroy handler
+    EventService.observable.filter(it => it.type === INTERNAL_NETWORK_MOUSE_ENTER
+        && it.subjectUuid === this._internalNetwork.uuid).subscribe(() => {
           this._path.fillColor = HOVER_COLOR;
         });
-    EventService.subscribe(INTERNAL_NETWORK_MOUSE_LEAVE, this._internalNetwork.uuid,
-        () => {
+    EventService.observable.filter(it => it.type === INTERNAL_NETWORK_MOUSE_LEAVE
+        && it.subjectUuid === this._internalNetwork.uuid).subscribe(() => {
           self._path.fillColor = PATH_COLOR;
         });
   }

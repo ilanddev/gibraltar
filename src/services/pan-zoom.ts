@@ -9,21 +9,20 @@ export class PanZoom {
   private _maxZoom: number = 5;
   private mouseNativeStart: paper.Point|null;
   private viewCenterStart: paper.Point|null;
-  // zoom mode as 0 and scroll mode as 1
-  private mode: number = 0;
 
   constructor(project: paper.Project) {
     this.project = project;
     const view = this.project.view;
     const self = this;
-    view.element.addEventListener('wheel', (ev) => {
-      if (self.mode === 0) {
+    view.element.addEventListener('mousewheel', (event: Event) => {
+      const ev = event as MouseWheelEvent;
+      if (ev.ctrlKey) {
+        ev.preventDefault();
         const mousePosition = new paper.Point(ev.offsetX, ev.offsetY);
         self.changeZoomCentered(ev.deltaY, mousePosition);
       } else {
         self.scrollView(ev.deltaY);
       }
-      ev.preventDefault();
     });
     view.on('mousedown', (ev: paper.MouseEvent) => {
       self.viewCenterStart = view.center;
@@ -58,18 +57,6 @@ export class PanZoom {
 
   get zoomRange(): number[] {
     return [this._minZoom, this._maxZoom];
-  }
-
-  setZoomMode() {
-    this.mode = 0;
-  }
-
-  setScrollMode() {
-    this.mode = 1;
-  }
-
-  toggleMode() {
-    this.mode = (this.mode + 1) % 2;
   }
 
   /**

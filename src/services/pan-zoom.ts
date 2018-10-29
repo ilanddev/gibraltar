@@ -16,12 +16,16 @@ export class PanZoom {
     const self = this;
     view.element.addEventListener('mousewheel', (event: Event) => {
       const ev = event as MouseWheelEvent;
+      ev.preventDefault();
       if (ev.ctrlKey) {
-        ev.preventDefault();
         const mousePosition = new paper.Point(ev.offsetX, ev.offsetY);
         self.changeZoomCentered(ev.deltaY, mousePosition);
       } else {
-        self.scrollView(ev.deltaY);
+        if (Math.abs(ev.deltaY) >= Math.abs(ev.deltaX)) {
+          self.scrollViewVertical(ev.deltaY);
+        } else {
+          self.scrollViewHorizontal(ev.deltaX);
+        }
       }
     });
     view.on('mousedown', (ev: paper.MouseEvent) => {
@@ -133,10 +137,16 @@ export class PanZoom {
         view.viewSize.width / rect.width);
   }
 
-  scrollView(delta: number) {
+  scrollViewVertical(delta: number) {
     const view = this.project.view;
     const newY = view.center.y + (delta * 2);
     view.center = new paper.Point(view.center.x, newY);
+  }
+
+  scrollViewHorizontal(delta: number) {
+    const view = this.project.view;
+    const newX = view.center.x + (delta * 2);
+    view.center = new paper.Point(newX, view.center.y);
   }
 
 }

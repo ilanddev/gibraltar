@@ -1,60 +1,47 @@
 import { EventType } from '../constants/events';
+import { Observable } from 'rxjs';
+import { Subject } from 'rxjs';
 
 export class AppEvent {
 
-  private uuid: string;
+  private _uuid: string;
+  private _data: {[key: string]: any};
 
-  constructor(private type: EventType, private subjectUuid: string, uuid?: string) {
-    this.uuid = uuid || genUuid();
+  constructor(private _type: EventType, private _subjectUuid: string, uuid?: string, data?: {[key: string]: any}) {
+    this._uuid = uuid || genUuid();
+    this._data = data || {};
   }
 
-  getSubjectUuid(): string {
-    return this.subjectUuid;
+  get subjectUuid(): string {
+    return this._subjectUuid;
   }
 
-  getType(): EventType {
-    return this.type;
+  get type(): EventType {
+    return this._type;
   }
 
-  getUuid() {
-    return this.uuid;
+  get uuid(): string {
+    return this._uuid;
+  }
+
+  get data(): {[key: string]: any} {
+    return this._data;
   }
 
 }
 
 export abstract class EventService {
 
-  static dispatch(eventType: EventType, subjectUuid: string): string {
-    const appEvent = new AppEvent(eventType, subjectUuid);
-    document.dispatchEvent(EventService.generateCustomEvent(appEvent));
-    return appEvent.getUuid();
+  private static subject = new Subject<AppEvent>();
+
+  static dispatch(type: EventType, subjectUuid: string, data?: {[key: string]: any}): string {
+    const evt = new AppEvent(type, subjectUuid, undefined, data);
+    EventService.subject.next(evt);
+    return evt.uuid;
   }
 
-  static subscribe(type: EventType, subjectUuid: string|undefined, listener: (evt: AppEvent) => void): () => void {
-    const evtListener = {
-      handleEvent: function(evt: CustomEvent): void {
-        if (subjectUuid === undefined || (evt.detail && evt.detail.subjectUuid === subjectUuid)) {
-          listener(EventService.generateAppEvent(evt));
-        }
-      }
-    };
-    document.addEventListener(type, evtListener);
-    return function() {
-      document.removeEventListener(type, evtListener);
-    };
-  }
-
-  private static generateCustomEvent(appEvent: AppEvent) {
-    return new CustomEvent(appEvent.getType(), {
-      detail: {
-        subjectUuid: appEvent.getSubjectUuid(),
-        eventUuid: appEvent.getUuid()
-      }
-    });
-  }
-
-  private static generateAppEvent(customEvent: CustomEvent): AppEvent {
-    return new AppEvent(customEvent.type as EventType, customEvent.detail.subjectUuid, customEvent.detail.eventUuid);
+  static get observable(): Observable<AppEvent> {
+    return EventService.subject;
   }
 
 }

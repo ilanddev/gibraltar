@@ -36,12 +36,12 @@ export class VnicNetConnectionComponent extends paper.Group {
     this.addChild(this._connector);
     this.onMouseEnter = this.mouseEnter;
     this.onMouseLeave = this.mouseLeave;
-    EventService.subscribe(VAPP_NETWORK_MOUSE_ENTER, this._vappNetwork.getVappNetworkData().uuid!,
-        function() {
+    EventService.observable.filter(it => it.type === VAPP_NETWORK_MOUSE_ENTER &&
+        this._vappNetwork.getVappNetworkData().uuid === it.subjectUuid).subscribe(() => {
           self._path.fillColor = HOVER_COLOR;
         });
-    EventService.subscribe(VAPP_NETWORK_MOUSE_LEAVE, this._vappNetwork.getVappNetworkData().uuid!,
-        function() {
+    EventService.observable.filter(it => it.type === VAPP_NETWORK_MOUSE_LEAVE &&
+        this._vappNetwork.getVappNetworkData().uuid === it.subjectUuid).subscribe(() => {
           self._path.fillColor = PATH_COLOR;
         });
   }

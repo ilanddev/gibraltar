@@ -2,6 +2,7 @@ import * as paper from 'paper';
 import { HORIZONTAL_PADDING, LabelComponent } from './label-component';
 import { IconService } from '../services/icon-service';
 import { ICON_SIZE } from '../constants/dimensions';
+import 'rxjs/add/operator/filter';
 
 /**
  * Icon Label Visual Component.

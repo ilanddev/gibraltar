@@ -34,13 +34,13 @@ export class VappNetworkComponent extends paper.Group {
     this._label.position = new paper.Point(LABEL_OFFSET, -(LABEL_HEIGHT / 2));
     this.onMouseEnter = this.mouseEnter;
     this.onMouseLeave = this.mouseLeave;
-    EventService.subscribe(VAPP_NETWORK_MOUSE_ENTER, this._vappNetwork.uuid!,
-        function() {
+    EventService.observable.filter(it => it.type === VAPP_NETWORK_MOUSE_ENTER &&
+        this._vappNetwork.uuid === it.subjectUuid).subscribe(() => {
           self._label.setHover();
           self._path.fillColor = HOVER_COLOR;
         });
-    EventService.subscribe(VAPP_NETWORK_MOUSE_LEAVE, this._vappNetwork.uuid!,
-        function() {
+    EventService.observable.filter(it => it.type === VAPP_NETWORK_MOUSE_LEAVE &&
+        this._vappNetwork.uuid === it.subjectUuid).subscribe(() => {
           self._label.setNormal();
           self._path.fillColor = PATH_COLOR;
         });

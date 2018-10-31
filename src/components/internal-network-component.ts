@@ -3,6 +3,7 @@ import { InternalNetwork } from 'iland-sdk';
 import { CONNECTOR_COLOR, HOVER_COLOR, PATH_COLOR } from '../constants/colors';
 import { CONNECTOR_RADIUS, PATH_STROKE_WIDTH } from '../constants/dimensions';
 import { EventService } from '../services/event-service';
+import { EventBuilder } from '../services/event-service';
 import { INTERNAL_NETWORK_MOUSE_ENTER, INTERNAL_NETWORK_MOUSE_LEAVE } from '../constants/events';
 import 'rxjs/add/operator/filter';
 
@@ -28,15 +29,12 @@ export class InternalNetworkComponent extends paper.Group {
     this.addChildren([this._path, circle]);
     this.onMouseEnter = this.mouseEnter;
     this.onMouseLeave = this.mouseLeave;
-    // TODO clean up subscription in destroy handler
-    EventService.observable.filter(it => it.type === INTERNAL_NETWORK_MOUSE_ENTER
-        && it.subjectUuid === this._internalNetwork.uuid).subscribe(() => {
-          this._path.fillColor = HOVER_COLOR;
-        });
-    EventService.observable.filter(it => it.type === INTERNAL_NETWORK_MOUSE_LEAVE
-        && it.subjectUuid === this._internalNetwork.uuid).subscribe(() => {
-          self._path.fillColor = PATH_COLOR;
-        });
+    EventService.getObservable(this._internalNetwork.uuid, INTERNAL_NETWORK_MOUSE_ENTER).subscribe(() => {
+      this._path.fillColor = HOVER_COLOR;
+    });
+    EventService.getObservable(this._internalNetwork.uuid, INTERNAL_NETWORK_MOUSE_LEAVE).subscribe(() => {
+      self._path.fillColor = PATH_COLOR;
+    });
   }
 
   /**
@@ -52,11 +50,11 @@ export class InternalNetworkComponent extends paper.Group {
   }
 
   private mouseEnter(event: paper.MouseEvent): void {
-    EventService.dispatch(INTERNAL_NETWORK_MOUSE_ENTER, this._internalNetwork.uuid);
+    EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_ENTER, this._internalNetwork.uuid).build());
   }
 
   private mouseLeave(event: paper.MouseEvent): void {
-    EventService.dispatch(INTERNAL_NETWORK_MOUSE_LEAVE, this._internalNetwork.uuid);
+    EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_LEAVE, this._internalNetwork.uuid).build());
   }
 
 }

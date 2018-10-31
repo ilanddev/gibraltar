@@ -13,6 +13,7 @@ import {
 } from '../constants/events';
 import 'rxjs/add/operator/filter';
 import { EdgeComponent } from './edge-component';
+import { EventBuilder } from '../services/event-service';
 
 // TODO extract constants
 const ISOLATED_NET_STUB_SIZE = 50;
@@ -149,13 +150,12 @@ export class OrgNetworksConnectionComponent extends paper.Group {
     };
     paths.forEach((path) => {
       path.onMouseEnter = function() {
-        EventService.dispatch(EXTERNAL_NETWORK_MOUSE_ENTER, extNetUuid);
+        EventService.publish(new EventBuilder(EXTERNAL_NETWORK_MOUSE_ENTER, extNetUuid).build());
       };
       path.onMouseLeave = function() {
-        EventService.dispatch(EXTERNAL_NETWORK_MOUSE_LEAVE, extNetUuid);
+        EventService.publish(new EventBuilder(EXTERNAL_NETWORK_MOUSE_LEAVE, extNetUuid).build());
       };
     });
-    // TODO cleanup in destroy method
     EventService.observable.filter(it => it.type === EXTERNAL_NETWORK_MOUSE_ENTER &&
         extNetUuid === it.subjectUuid).subscribe(mouseEnterHandler);
     EventService.observable.filter(it => it.type === EXTERNAL_NETWORK_MOUSE_LEAVE &&
@@ -171,13 +171,12 @@ export class OrgNetworksConnectionComponent extends paper.Group {
     };
     paths.forEach((path) => {
       path.onMouseEnter = function() {
-        EventService.dispatch(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid);
+        EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid).build());
       };
       path.onMouseLeave = function() {
-        EventService.dispatch(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid);
+        EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid).build());
       };
     });
-    // TODO cleanup in destroy method
     EventService.observable.filter(it => it.type === INTERNAL_NETWORK_MOUSE_ENTER &&
         intNetUuid === it.subjectUuid).subscribe(mouseEnterHandler);
     EventService.observable.filter(it => it.type === INTERNAL_NETWORK_MOUSE_LEAVE &&
@@ -192,10 +191,10 @@ export class OrgNetworksConnectionComponent extends paper.Group {
       path.fillColor = PATH_COLOR;
     };
     path.onMouseEnter = function() {
-      EventService.dispatch(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid);
+      EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid).build());
     };
     path.onMouseLeave = function() {
-      EventService.dispatch(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid);
+      EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid).build());
     };
     // TODO cleanup in destroy method
     EventService.observable.filter(it => it.type === INTERNAL_NETWORK_MOUSE_ENTER &&
@@ -217,34 +216,33 @@ export class OrgNetworksConnectionComponent extends paper.Group {
       return path.data.hovered;
     };
     path.onMouseEnter = function() {
-      EventService.dispatch(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid);
+      EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid).build());
     };
     path.onMouseLeave = function() {
-      EventService.dispatch(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid);
+      EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid).build());
     };
-    // TODO cleanup in destroy method
-    EventService.observable.filter(it => it.type === INTERNAL_NETWORK_MOUSE_ENTER &&
-        intNetUuid === it.subjectUuid).subscribe(() => {
-          mouseEnterHandler(path);
-          EventService.dispatch(EXTERNAL_NETWORK_MOUSE_ENTER, extNetUuid);
-        });
-    EventService.observable.filter(it => it.type === INTERNAL_NETWORK_MOUSE_LEAVE &&
-        intNetUuid === it.subjectUuid).subscribe(() => {
-          mouseLeaveHandler(path);
-          EventService.dispatch(EXTERNAL_NETWORK_MOUSE_LEAVE, extNetUuid);
-        });
-    EventService.observable.filter(it => it.type === EXTERNAL_NETWORK_MOUSE_ENTER &&
-        extNetUuid === it.subjectUuid).subscribe(() => {
-          if (!isPathHovered(path)) {
-            EventService.dispatch(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid);
-          }
-        });
-    EventService.observable.filter(it => it.type === EXTERNAL_NETWORK_MOUSE_LEAVE &&
-        extNetUuid === it.subjectUuid).subscribe(() => {
-          if (isPathHovered(path)) {
-            EventService.dispatch(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid);
-          }
-        });
+    EventService.getObservable(intNetUuid, INTERNAL_NETWORK_MOUSE_ENTER).subscribe((e) => {
+      mouseEnterHandler(path);
+      if (e.sourceUuid !== extNetUuid) {
+        EventService.publish(new EventBuilder(EXTERNAL_NETWORK_MOUSE_ENTER, extNetUuid, e).build());
+      }
+    });
+    EventService.getObservable(intNetUuid, INTERNAL_NETWORK_MOUSE_LEAVE).subscribe((e) => {
+      mouseLeaveHandler(path);
+      if (e.sourceUuid !== extNetUuid) {
+        EventService.publish(new EventBuilder(EXTERNAL_NETWORK_MOUSE_LEAVE, extNetUuid, e).build());
+      }
+    });
+    EventService.getObservable(extNetUuid, EXTERNAL_NETWORK_MOUSE_ENTER).subscribe((e) => {
+      if (e.sourceUuid !== intNetUuid && !isPathHovered(path)) {
+        EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid, e).build());
+      }
+    });
+    EventService.getObservable(extNetUuid, EXTERNAL_NETWORK_MOUSE_LEAVE).subscribe((e) => {
+      if (e.sourceUuid !== intNetUuid && isPathHovered(path)) {
+        EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid, e).build());
+      }
+    });
   }
 
 }

@@ -8,6 +8,7 @@ import { VmPowerStatus } from 'iland-sdk';
 import { ICON_SIZE, VNIC_SPACING } from '../constants/dimensions';
 import { POWER_MIXED_COLOR, POWERED_OFF_COLOR, POWERED_ON_COLOR } from '../constants/colors';
 import { EventService } from '../services/event-service';
+import { EventBuilder } from '../services/event-service';
 import { VM_MOUSE_ENTER } from '../constants/events';
 import { VM_MOUSE_LEAVE } from '../constants/events';
 
@@ -53,16 +54,14 @@ export class VmComponent extends paper.Group {
 
   private mouseEnter(event: paper.MouseEvent): void {
     this._label.setHover();
-    EventService.dispatch(VM_MOUSE_ENTER, this._vm.getVm().uuid, {
-      vm: this._vm.getVm()
-    });
+    EventService.publish(new EventBuilder(VM_MOUSE_ENTER, this._vm.getVm().uuid)
+        .setDataValue('vm', this._vm.getVm()).build());
   }
 
   private mouseLeave(event: paper.MouseEvent): void {
     this._label.setNormal();
-    EventService.dispatch(VM_MOUSE_LEAVE, this._vm.getVm().uuid, {
-      vm: this._vm.getVm()
-    });
+    EventService.publish(new EventBuilder(VM_MOUSE_LEAVE, this._vm.getVm().uuid)
+        .setDataValue('vm', this._vm.getVm()).build());
   }
 
   private getColorForVmStatus(status: VmPowerStatus): string {

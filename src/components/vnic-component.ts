@@ -6,6 +6,7 @@ import { EventService } from '../services/event-service';
 import { VNIC_MOUSE_ENTER } from '../constants/events';
 import { VNIC_MOUSE_LEAVE } from '../constants/events';
 import { VnicData } from '../model/vnic-data';
+import { EventBuilder } from '../services/event-service';
 
 /**
  * Virtual Network Interface Card Visual Component.
@@ -40,15 +41,13 @@ export class VnicComponent extends paper.Group {
   }
 
   private mouseEnter(event: paper.MouseEvent): void {
-    EventService.dispatch(VNIC_MOUSE_ENTER, this._vnic.getVmUuid(), {
-      vnic: this._vnic
-    });
+    EventService.publish(new EventBuilder(VNIC_MOUSE_ENTER, this._vnic.getVmUuid())
+        .setDataValue('vnic', this._vnic).build());
   }
 
   private mouseLeave(event: paper.MouseEvent): void {
-    EventService.dispatch(VNIC_MOUSE_LEAVE, this._vnic.getVmUuid(), {
-      vnic: this._vnic
-    });
+    EventService.publish(new EventBuilder(VNIC_MOUSE_LEAVE, this._vnic.getVmUuid())
+        .setDataValue('vnic', this._vnic).build());
   }
 
 }

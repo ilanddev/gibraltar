@@ -5,6 +5,7 @@ import { CONNECTOR_COLOR, HOVER_COLOR, PATH_COLOR, VAPP_BACKGROUND_COLOR } from 
 import { CONNECTOR_RADIUS, PATH_STROKE_WIDTH } from '../constants/dimensions';
 import { EventService } from '../services/event-service';
 import { VAPP_NETWORK_MOUSE_ENTER, VAPP_NETWORK_MOUSE_LEAVE } from '../constants/events';
+import { EventBuilder } from '../services/event-service';
 
 /**
  * Virtual Network Interface Card Network Connection Visual Component.
@@ -47,11 +48,13 @@ export class VnicNetConnectionComponent extends paper.Group {
   }
 
   private mouseEnter(event: paper.MouseEvent): void {
-    EventService.dispatch(VAPP_NETWORK_MOUSE_ENTER, this._vappNetwork.getVappNetworkData().uuid);
+    EventService.publish(new EventBuilder(VAPP_NETWORK_MOUSE_ENTER, this._vappNetwork.getVappNetworkData().uuid)
+        .build());
   }
 
   private mouseLeave(event: paper.MouseEvent): void {
-    EventService.dispatch(VAPP_NETWORK_MOUSE_LEAVE, this._vappNetwork.getVappNetworkData().uuid);
+    EventService.publish(new EventBuilder(VAPP_NETWORK_MOUSE_LEAVE, this._vappNetwork.getVappNetworkData().uuid)
+        .build());
   }
 
 }

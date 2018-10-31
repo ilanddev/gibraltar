@@ -4,6 +4,7 @@ import { EDGE_MOUSE_ENTER } from '../constants/events';
 import { EDGE_MOUSE_LEAVE } from '../constants/events';
 import { Edge } from 'iland-sdk';
 import { IconService } from '../services/icon-service';
+import { EventBuilder } from '../services/event-service';
 
 /**
  * Edge Component.
@@ -22,14 +23,10 @@ export class EdgeComponent extends paper.Group {
   }
 
   private mouseEnter(event: paper.MouseEvent): void {
-    EventService.dispatch(EDGE_MOUSE_ENTER, this._edge.uuid, {
-      edge: this._edge
-    });
+    EventService.publish(new EventBuilder(EDGE_MOUSE_ENTER, this._edge.uuid).setDataValue('edge', this._edge).build());
   }
 
   private mouseLeave(event: paper.MouseEvent): void {
-    EventService.dispatch(EDGE_MOUSE_LEAVE, this._edge.uuid, {
-      edge: this._edge
-    });
+    EventService.publish(new EventBuilder(EDGE_MOUSE_LEAVE, this._edge.uuid).setDataValue('edge', this._edge).build());
   }
 }

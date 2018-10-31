@@ -4,6 +4,7 @@ import { ExternalNetwork } from '../model/org-data';
 import { HOVER_COLOR, PATH_COLOR } from '../constants/colors';
 import { LABEL_HEIGHT, PATH_STROKE_WIDTH } from '../constants/dimensions';
 import { EventService } from '../services/event-service';
+import { EventBuilder } from '../services/event-service';
 import { EXTERNAL_NETWORK_MOUSE_ENTER, EXTERNAL_NETWORK_MOUSE_LEAVE } from '../constants/events';
 
 const EXTERNAL_NET_MAX_LABEL_LENGTH = 350;
@@ -34,16 +35,14 @@ export class ExternalNetworkComponent extends paper.Group {
     this._label.position = new paper.Point(_pathLength, -(LABEL_HEIGHT / 2));
     this.onMouseEnter = this.mouseEnter;
     this.onMouseLeave = this.mouseLeave;
-    EventService.observable.filter(it => it.type === EXTERNAL_NETWORK_MOUSE_ENTER &&
-        this._externalNetwork.uuid === it.subjectUuid).subscribe(() => {
-          self._label.setHover();
-          self._path.fillColor = HOVER_COLOR;
-        });
-    EventService.observable.filter(it => it.type === EXTERNAL_NETWORK_MOUSE_LEAVE &&
-        this._externalNetwork.uuid === it.subjectUuid).subscribe(() => {
-          self._label.setNormal();
-          self._path.fillColor = PATH_COLOR;
-        });
+    EventService.getObservable(this._externalNetwork.uuid, EXTERNAL_NETWORK_MOUSE_ENTER).subscribe(() => {
+      self._label.setHover();
+      self._path.fillColor = HOVER_COLOR;
+    });
+    EventService.getObservable(this._externalNetwork.uuid, EXTERNAL_NETWORK_MOUSE_LEAVE).subscribe(() => {
+      self._label.setNormal();
+      self._path.fillColor = PATH_COLOR;
+    });
   }
 
   getPath(): paper.Path.Rectangle {
@@ -59,11 +58,11 @@ export class ExternalNetworkComponent extends paper.Group {
   }
 
   private mouseEnter(event: paper.MouseEvent): void {
-    EventService.dispatch(EXTERNAL_NETWORK_MOUSE_ENTER, this._externalNetwork.uuid);
+    EventService.publish(new EventBuilder(EXTERNAL_NETWORK_MOUSE_ENTER, this._externalNetwork.uuid).build());
   }
 
   private mouseLeave(event: paper.MouseEvent): void {
-    EventService.dispatch(EXTERNAL_NETWORK_MOUSE_LEAVE, this._externalNetwork.uuid);
+    EventService.publish(new EventBuilder(EXTERNAL_NETWORK_MOUSE_LEAVE, this._externalNetwork.uuid).build());
   }
 
 }

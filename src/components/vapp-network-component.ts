@@ -5,6 +5,7 @@ import { HOVER_COLOR, PATH_COLOR } from '../constants/colors';
 import { EventService } from '../services/event-service';
 import { VAPP_NETWORK_MOUSE_ENTER, VAPP_NETWORK_MOUSE_LEAVE } from '../constants/events';
 import { LABEL_HEIGHT, PATH_STROKE_WIDTH } from '../constants/dimensions';
+import { EventBuilder } from '../services/event-service';
 
 const LABEL_OFFSET = 100;
 
@@ -59,11 +60,11 @@ export class VappNetworkComponent extends paper.Group {
   }
 
   private mouseEnter(event: paper.MouseEvent): void {
-    EventService.dispatch(VAPP_NETWORK_MOUSE_ENTER, this._vappNetwork.uuid);
+    EventService.publish(new EventBuilder(VAPP_NETWORK_MOUSE_ENTER, this._vappNetwork.uuid).build());
   }
 
   private mouseLeave(event: paper.MouseEvent): void {
-    EventService.dispatch(VAPP_NETWORK_MOUSE_LEAVE, this._vappNetwork.uuid);
+    EventService.publish(new EventBuilder(VAPP_NETWORK_MOUSE_LEAVE, this._vappNetwork.uuid).build());
   }
 
 }

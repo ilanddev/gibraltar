@@ -31,8 +31,9 @@ export class Gibraltar {
     removeLoadingText();
     const orgItem = new OrgItem(orgData);
     const bounds = paper.project.activeLayer.bounds;
-    panZoomCtrl.zoomTo(
-        new paper.Rectangle(bounds.x - 1000, bounds.y - 1000, bounds.width + 2000, bounds.height + 2000));
+    const x = (paper.view.viewSize.width / 2) + bounds.x - 50;
+    const y = (paper.view.viewSize.height / 2) + bounds.y - 50;
+    panZoomCtrl.updateCenter(new paper.Point(x, y));
     return orgItem;
   }
 

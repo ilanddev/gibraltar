@@ -6,7 +6,7 @@ export class PanZoom {
   factor = 1.10;
 
   private _minZoom: number = .2;
-  private _maxZoom: number = 5;
+  private _maxZoom: number = 1;
   private mouseNativeStart: paper.Point|null;
   private viewCenterStart: paper.Point|null;
 
@@ -32,23 +32,26 @@ export class PanZoom {
       self.viewCenterStart = view.center;
       // Have to use native mouse offset, because ev.delta
       //  changes as the view is scrolled.
+      paper.view.element.style.cursor = 'grabbing';
       self.mouseNativeStart = new paper.Point(ev.event.offsetX, ev.event.offsetY);
     });
     view.on('mousedrag', (ev: paper.MouseEvent) => {
       if (self.viewCenterStart) {
+        paper.view.element.style.cursor = 'grabbing';
         const nativeDelta = new paper.Point(
             ev.event.offsetX - self.mouseNativeStart!.x,
             ev.event.offsetY - self.mouseNativeStart!.y
         );
         // Move into view coordinates to subtract delta,
         //  then back into project coords.
-        view.center = view.viewToProject(
+        this.setCenterConstrained(view.viewToProject(
             view.projectToView(self.viewCenterStart)
-                .subtract(nativeDelta));
+                .subtract(nativeDelta)));
       }
     });
     view.on('mouseup', (ev: paper.MouseEvent) => {
       if (self.mouseNativeStart) {
+        paper.view.element.style.cursor = 'default';
         self.mouseNativeStart = null;
         self.viewCenterStart = null;
       }
@@ -61,25 +64,6 @@ export class PanZoom {
 
   get zoomRange(): number[] {
     return [this._minZoom, this._maxZoom];
-  }
-
-  /**
-   * Set zoom level.
-   * @returns zoom level that was set, or null if it was not changed
-   */
-  setZoomConstrained(zoom: number): number|null {
-    if (this._minZoom) {
-      zoom = Math.max(zoom, this._minZoom);
-    }
-    if (this._maxZoom) {
-      zoom = Math.min(zoom, this._maxZoom);
-    }
-    const view = this.project.view;
-    if (zoom !== view.zoom) {
-      view.zoom = zoom;
-      return zoom;
-    }
-    return null;
   }
 
   setZoomRange(range: paper.Size[]): number[] {
@@ -111,42 +95,80 @@ export class PanZoom {
     const oldZoom = view.zoom;
     const oldCenter = view.center;
     const viewPos = view.viewToProject(mousePos);
-
     let newZoom: number | null = delta > 0
         ? view.zoom * this.factor
         : view.zoom / this.factor;
     newZoom = this.setZoomConstrained(newZoom);
-
     if (!newZoom) {
       return;
     }
-
     const zoomScale = oldZoom / newZoom;
     const centerAdjust = viewPos.subtract(oldCenter);
     const offset = viewPos.subtract(centerAdjust.multiply(zoomScale))
                           .subtract(oldCenter);
-
-    view.center = view.center.add(offset);
+    this.setCenterConstrained(view.center.add(offset));
   }
 
   zoomTo(rect: paper.Rectangle) {
     const view = this.project.view;
-    view.center = rect.center;
-    view.zoom = Math.min(
+    this.setCenterConstrained(rect.center);
+    this.setZoomConstrained(Math.min(
         view.viewSize.height / rect.height,
-        view.viewSize.width / rect.width);
+        view.viewSize.width / rect.width));
   }
 
   scrollViewVertical(delta: number) {
     const view = this.project.view;
     const newY = view.center.y + (delta * 2);
-    view.center = new paper.Point(view.center.x, newY);
+    this.setCenterConstrained(new paper.Point(view.center.x, newY));
   }
 
   scrollViewHorizontal(delta: number) {
     const view = this.project.view;
     const newX = view.center.x + (delta * 2);
-    view.center = new paper.Point(newX, view.center.y);
+    this.setCenterConstrained(new paper.Point(newX, view.center.y));
+  }
+
+  updateCenter(point: paper.Point) {
+    this.setCenterConstrained(point);
+  }
+
+  private setCenterConstrained(center: paper.Point) {
+    const bounds = paper.project.activeLayer.bounds;
+    const view = paper.view;
+    const vw = view.viewSize.width;
+    const vh = view.viewSize.height;
+    const bx = bounds.x;
+    const by = bounds.y;
+    const bw = bounds.width;
+    const bh = bounds.height;
+    const minX = ((vw / 2) + bx - 50);
+    const minY = ((vh / 2) + by - 50);
+    const maxX = ((bx + bw + 50) - (vw / 2));
+    const maxY = ((by + bh + 50) - (vh / 2));
+    const normX = Math.max(Math.min(maxX, center.x), minX);
+    const normY = Math.max(Math.min(maxY, center.y), minY);
+    this.project.view.center = new paper.Point(normX, normY);
+  }
+
+  /**
+   * Set zoom level.
+   * @returns zoom level that was set, or null if it was not changed
+   */
+  private setZoomConstrained(zoom: number): number {
+    if (this._minZoom) {
+      zoom = Math.max(zoom, this._minZoom);
+    }
+    if (this._maxZoom) {
+      zoom = Math.min(zoom, this._maxZoom);
+    }
+    const view = this.project.view;
+    if (zoom !== view.zoom) {
+      view.zoom = zoom;
+      return zoom;
+    }
+    this.setCenterConstrained(paper.project.view.center);
+    return zoom;
   }
 
 }

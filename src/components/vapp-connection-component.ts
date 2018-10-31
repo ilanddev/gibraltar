@@ -132,19 +132,19 @@ export class VappConnectionComponent extends paper.Group {
           mouseLeaveHandler(intNetPath);
           mouseLeaveHandler(vappNetPath);
           if (e.sourceUuid !== vappNetUuid && fenceMode === 'BRIDGED') {
-            EventService.publish(new EventBuilder(VAPP_NETWORK_MOUSE_LEAVE, vappNetUuid).build());
+            EventService.publish(new EventBuilder(VAPP_NETWORK_MOUSE_LEAVE, vappNetUuid, e).build());
           }
         });
     EventService.observable.filter(it => it.type === VAPP_NETWORK_MOUSE_ENTER &&
         vappNetUuid === it.subjectUuid).subscribe((e) => {
           if (e.sourceUuid !== intNetUuid && fenceMode === 'BRIDGED') {
-            EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid).build());
+            EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid, e).build());
           }
         });
     EventService.observable.filter(it => it.type === VAPP_NETWORK_MOUSE_LEAVE &&
         vappNetUuid === it.subjectUuid).subscribe((e) => {
           if (e.sourceUuid !== intNetUuid && fenceMode === 'BRIDGED') {
-            EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid).build());
+            EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid, e).build());
           }
         });
   }

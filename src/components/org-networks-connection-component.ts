@@ -5,6 +5,7 @@ import { Edge } from 'iland-sdk';
 import { CONNECTOR_COLOR, HOVER_COLOR, PATH_COLOR, VAPP_BACKGROUND_COLOR } from '../constants/colors';
 import { CONNECTOR_RADIUS, PATH_STROKE_WIDTH } from '../constants/dimensions';
 import { EventService } from '../services/event-service';
+import { EventBuilder } from '../services/event-service';
 import {
   EXTERNAL_NETWORK_MOUSE_ENTER,
   EXTERNAL_NETWORK_MOUSE_LEAVE,
@@ -13,7 +14,6 @@ import {
 } from '../constants/events';
 import 'rxjs/add/operator/filter';
 import { EdgeComponent } from './edge-component';
-import { EventBuilder } from '../services/event-service';
 
 // TODO extract constants
 const ISOLATED_NET_STUB_SIZE = 50;
@@ -220,23 +220,23 @@ export class OrgNetworksConnectionComponent extends paper.Group {
     };
     EventService.getObservable(intNetUuid, INTERNAL_NETWORK_MOUSE_ENTER).subscribe((e) => {
       mouseEnterHandler(path);
-      if (e.sourceUuid !== extNetUuid) {
+      if (!e.hasAncestor(extNetUuid, EXTERNAL_NETWORK_MOUSE_ENTER)) {
         EventService.publish(new EventBuilder(EXTERNAL_NETWORK_MOUSE_ENTER, extNetUuid, e).build());
       }
     });
     EventService.getObservable(intNetUuid, INTERNAL_NETWORK_MOUSE_LEAVE).subscribe((e) => {
       mouseLeaveHandler(path);
-      if (e.sourceUuid !== extNetUuid) {
+      if (!e.hasAncestor(extNetUuid, EXTERNAL_NETWORK_MOUSE_LEAVE)) {
         EventService.publish(new EventBuilder(EXTERNAL_NETWORK_MOUSE_LEAVE, extNetUuid, e).build());
       }
     });
     EventService.getObservable(extNetUuid, EXTERNAL_NETWORK_MOUSE_ENTER).subscribe((e) => {
-      if (e.sourceUuid !== intNetUuid) {
+      if (!e.hasAncestor(intNetUuid, INTERNAL_NETWORK_MOUSE_ENTER)) {
         EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid, e).build());
       }
     });
     EventService.getObservable(extNetUuid, EXTERNAL_NETWORK_MOUSE_LEAVE).subscribe((e) => {
-      if (e.sourceUuid !== intNetUuid) {
+      if (!e.hasAncestor(intNetUuid, INTERNAL_NETWORK_MOUSE_LEAVE)) {
         EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid, e).build());
       }
     });

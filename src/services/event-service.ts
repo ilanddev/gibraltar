@@ -7,14 +7,14 @@ export class EventBuilder {
   readonly uuid: string;
   readonly type: EventType;
   readonly subjectUuid: string;
-  readonly sourceUuid: string;
+  readonly parent: AppEvent | undefined;
   private readonly _data: {[key: string]: any};
 
   constructor(type: EventType, subjectUuid: string, parent?: AppEvent) {
     this.uuid = EventBuilder.genUuid();
     this.type = type;
     this.subjectUuid = subjectUuid;
-    this.sourceUuid = parent ? parent.sourceUuid : subjectUuid;
+    this.parent = parent;
     this._data = parent ? parent.getData() : {};
   }
 
@@ -47,13 +47,13 @@ export class AppEvent {
 
   readonly uuid: string;
   readonly type: EventType;
-  readonly sourceUuid: string;
+  readonly parent: AppEvent | undefined;
   readonly subjectUuid: string;
   private readonly data: {[key: string]: any};
 
   constructor(builder: EventBuilder) {
     this.uuid = builder.uuid;
-    this.sourceUuid = builder.sourceUuid;
+    this.parent = builder.parent;
     this.subjectUuid = builder.subjectUuid;
     this.type = builder.type;
     this.data = builder.getData();
@@ -61,6 +61,17 @@ export class AppEvent {
 
   getData(): {[key: string]: any} {
     return Object.assign({}, this.data);
+  }
+
+  hasAncestor(subjectUuid: string, type: EventType) {
+    let parent = this.parent;
+    while (parent) {
+      if (parent.subjectUuid === subjectUuid && parent.type === type) {
+        return true;
+      }
+      parent = parent.parent;
+    }
+    return false;
   }
 
   getDataValue(key: string): any {

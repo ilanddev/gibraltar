@@ -123,7 +123,7 @@ export class VappConnectionComponent extends paper.Group {
         intNetUuid === it.subjectUuid).subscribe((e) => {
           mouseEnterHandler(intNetPath);
           mouseEnterHandler(vappNetPath);
-          if (e.sourceUuid !== vappNetUuid && fenceMode === 'BRIDGED') {
+          if (!e.hasAncestor(vappNetUuid, VAPP_NETWORK_MOUSE_ENTER) && fenceMode === 'BRIDGED') {
             EventService.publish(new EventBuilder(VAPP_NETWORK_MOUSE_ENTER, vappNetUuid, e).build());
           }
         });
@@ -131,19 +131,19 @@ export class VappConnectionComponent extends paper.Group {
         intNetUuid === it.subjectUuid).subscribe((e) => {
           mouseLeaveHandler(intNetPath);
           mouseLeaveHandler(vappNetPath);
-          if (e.sourceUuid !== vappNetUuid && fenceMode === 'BRIDGED') {
+          if (!e.hasAncestor(vappNetUuid, VAPP_NETWORK_MOUSE_LEAVE) && fenceMode === 'BRIDGED') {
             EventService.publish(new EventBuilder(VAPP_NETWORK_MOUSE_LEAVE, vappNetUuid, e).build());
           }
         });
     EventService.observable.filter(it => it.type === VAPP_NETWORK_MOUSE_ENTER &&
         vappNetUuid === it.subjectUuid).subscribe((e) => {
-          if (e.sourceUuid !== intNetUuid && fenceMode === 'BRIDGED') {
+          if (!e.hasAncestor(intNetUuid, INTERNAL_NETWORK_MOUSE_ENTER) && fenceMode === 'BRIDGED') {
             EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid, e).build());
           }
         });
     EventService.observable.filter(it => it.type === VAPP_NETWORK_MOUSE_LEAVE &&
         vappNetUuid === it.subjectUuid).subscribe((e) => {
-          if (e.sourceUuid !== intNetUuid && fenceMode === 'BRIDGED') {
+          if (!e.hasAncestor(intNetUuid, INTERNAL_NETWORK_MOUSE_LEAVE) && fenceMode === 'BRIDGED') {
             EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid, e).build());
           }
         });

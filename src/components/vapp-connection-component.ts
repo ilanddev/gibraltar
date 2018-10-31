@@ -113,9 +113,6 @@ export class VappConnectionComponent extends paper.Group {
       path.fillColor = PATH_COLOR;
       path.data.hovered = false;
     };
-    const isPathHovered = function(path: paper.Path): boolean {
-      return path.data.hovered;
-    };
     intNetPath.onMouseEnter = vappNetPath.onMouseEnter = function() {
       EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid).build());
     };
@@ -140,13 +137,13 @@ export class VappConnectionComponent extends paper.Group {
         });
     EventService.observable.filter(it => it.type === VAPP_NETWORK_MOUSE_ENTER &&
         vappNetUuid === it.subjectUuid).subscribe((e) => {
-          if (e.sourceUuid !== intNetUuid && fenceMode === 'BRIDGED' && !isPathHovered(intNetPath)) {
+          if (e.sourceUuid !== intNetUuid && fenceMode === 'BRIDGED') {
             EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid).build());
           }
         });
     EventService.observable.filter(it => it.type === VAPP_NETWORK_MOUSE_LEAVE &&
         vappNetUuid === it.subjectUuid).subscribe((e) => {
-          if (e.sourceUuid !== intNetUuid && fenceMode === 'BRIDGED' && isPathHovered(intNetPath)) {
+          if (e.sourceUuid !== intNetUuid && fenceMode === 'BRIDGED') {
             EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid).build());
           }
         });

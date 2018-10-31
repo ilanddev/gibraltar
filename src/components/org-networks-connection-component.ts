@@ -212,9 +212,6 @@ export class OrgNetworksConnectionComponent extends paper.Group {
       path.fillColor = PATH_COLOR;
       path.data.hovered = false;
     };
-    const isPathHovered = function(path: paper.Path): boolean {
-      return path.data.hovered;
-    };
     path.onMouseEnter = function() {
       EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid).build());
     };
@@ -234,12 +231,12 @@ export class OrgNetworksConnectionComponent extends paper.Group {
       }
     });
     EventService.getObservable(extNetUuid, EXTERNAL_NETWORK_MOUSE_ENTER).subscribe((e) => {
-      if (e.sourceUuid !== intNetUuid && !isPathHovered(path)) {
+      if (e.sourceUuid !== intNetUuid) {
         EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_ENTER, intNetUuid, e).build());
       }
     });
     EventService.getObservable(extNetUuid, EXTERNAL_NETWORK_MOUSE_LEAVE).subscribe((e) => {
-      if (e.sourceUuid !== intNetUuid && isPathHovered(path)) {
+      if (e.sourceUuid !== intNetUuid) {
         EventService.publish(new EventBuilder(INTERNAL_NETWORK_MOUSE_LEAVE, intNetUuid, e).build());
       }
     });

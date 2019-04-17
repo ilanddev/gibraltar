@@ -23,20 +23,6 @@ export abstract class IconService {
     return IconService.cache.get(os)!;
   }
 
-  static getEdgeIcon(): paper.Symbol {
-    if (IconService.edgeIconSymbol === undefined) {
-      const request = new XMLHttpRequest();
-      request.open('GET', EDGE_ICON, false);
-      request.send(null);
-      if (request.status === 200) {
-        const item = paper.project.importSVG(request.response);
-        item.scale(ICON_SIZE / item.bounds.width, ICON_SIZE / item.bounds.height);
-        IconService.edgeIconSymbol = new paper.Symbol(item);
-      }
-    }
-    return IconService.edgeIconSymbol!;
-  }
-
   static getDefaultIcon(): paper.Symbol {
     if (IconService.defaultIconSymbol === undefined) {
       const request = new XMLHttpRequest();

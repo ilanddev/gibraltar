@@ -1,0 +1,55 @@
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import * as paper from 'paper';
+
+const DEFAULT_BACKGROUND_COLOR = '#343B4E';
+
+@Component({
+  selector: 'demo',
+  template: `
+    <div class="demo-component">
+      <div class="demo-title">{{ label }}</div>
+      <p class="demo-description" *ngIf="description">{{ description }}</p>
+	    <canvas class="demo-canvas" #canvas></canvas>
+    </div>
+  `,
+  styles: [require('./demo.component.less')]
+})
+export class DemoComponent implements OnInit {
+
+  @ViewChild('canvas') canvas: ElementRef;
+
+  @Input()
+  label: string;
+
+  @Input()
+  description: string;
+
+  private project: paper.Project;
+
+  ngOnInit(): void {
+    this.project = new paper.Project(this.canvas.nativeElement);
+    this.backgroundColor = DEFAULT_BACKGROUND_COLOR;
+  }
+
+  /**
+   * Gets the paper project that is associated with this demo component.
+   */
+  getProject(): paper.Project {
+    return this.project;
+  }
+
+  set backgroundColor(color: string) {
+    (this.canvas.nativeElement as HTMLCanvasElement).style.backgroundColor = color;
+  }
+
+  @Input()
+  set height(height: number) {
+    (this.canvas.nativeElement as HTMLCanvasElement).style.height = height + 'px';
+  }
+
+  @Input()
+  set width(width: number) {
+    (this.canvas.nativeElement as HTMLCanvasElement).style.width = width + 'px';
+  }
+
+}

@@ -1,0 +1,6 @@
+[Settings]
+ID="objective-easley-d75b69"
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 301

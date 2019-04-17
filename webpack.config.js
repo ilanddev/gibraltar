@@ -43,7 +43,7 @@ var config = {
     extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.tsx?$/,
         exclude: /.*?node_modules/,

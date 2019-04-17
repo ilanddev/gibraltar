@@ -5,6 +5,7 @@
     "semicolon": [true, "always"],
     "max-line-length": [true, 120],
     "promise-function-async": true,
-    "no-use-before-declare": false
+    "no-use-before-declare": false,
+    "no-eval": false
   }
 }

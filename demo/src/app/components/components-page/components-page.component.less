@@ -1,0 +1,25 @@
+#components-page {
+  display: flex;
+  height: calc(100vh - 60px);
+  #components-nav {
+    flex-basis: 300px;
+    border-right: 1px solid gray;
+    padding-top: 10px;
+  }
+  #components-content {
+    flex: 1;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+  .nav-link {
+    color: black;
+    cursor: pointer;
+  }
+  .nav-link:hover {
+    background-color: #E3E8E8
+  }
+  .nav-link.active {
+    background-color: lightgray !important;
+    font-weight: 500 !important;
+  }
+}

@@ -1,7 +1,8 @@
 export const HOVER_COLOR = '#FFFFFF';
+export const HOVER_BG_COLOR = '#242A3B';
 export const ACTIVE_COLOR = '#03A6FF';
-export const LABEL_BACKGROUND_COLOR = '#202533';
-export const LABEL_TEXT_COLOR = '#87A1B5';
+export const LABEL_BACKGROUND_COLOR = '#191C28';
+export const LABEL_TEXT_COLOR = '#FFFFFF';
 export const PATH_COLOR = '#353F4E';
 export const VAPP_BACKGROUND_COLOR = '#282D3D';
 export const CONNECTOR_COLOR = '#87A1B5';

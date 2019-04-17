@@ -1,13 +1,17 @@
 import * as paper from 'paper';
-import { ACTIVE_COLOR, HOVER_COLOR, LABEL_BACKGROUND_COLOR, LABEL_TEXT_COLOR } from '../constants/colors';
+import {
+  ACTIVE_COLOR,
+  HOVER_BG_COLOR,
+  HOVER_COLOR,
+  LABEL_BACKGROUND_COLOR,
+  LABEL_TEXT_COLOR
+} from '../constants/colors';
 import { LABEL_HEIGHT } from '../constants/dimensions';
 
-const DEFAULT_MAX_LABEL_WIDTH = 130;
-const VERTICAL_PADDING = 8;
+const DEFAULT_MAX_LABEL_WIDTH = 200;
+const VERTICAL_PADDING_TOP = 8;
 export const HORIZONTAL_PADDING = 9;
-const LABEL_FONT_SIZE = 14;
-const STATUS_INDICATOR_MARGIN = 40;
-const STATUS_DOT_RADIUS = 5;
+const LABEL_FONT_SIZE = 13;
 
 /**
  * Label Visual Component.
@@ -16,18 +20,19 @@ export class LabelComponent extends paper.Group {
 
   protected _label: paper.PointText;
   protected _background: paper.Path.Rectangle;
-  protected _statusDot?: paper.Path.Circle;
 
   constructor(protected _text: string, protected _point: paper.Point = new paper.Point(0, 0),
-              protected statusIndicatorColor?: string, protected maxWidth = DEFAULT_MAX_LABEL_WIDTH) {
+              protected maxWidth = DEFAULT_MAX_LABEL_WIDTH) {
     super();
     this.applyMatrix = false;
     this.position = _point;
-    this._label = new paper.PointText(new paper.Point(HORIZONTAL_PADDING, LABEL_HEIGHT - (VERTICAL_PADDING * 2)));
+    this._label = new paper.PointText(new paper.Point(HORIZONTAL_PADDING, VERTICAL_PADDING_TOP +
+        LABEL_FONT_SIZE - 2));
     this._label.justification = 'left';
     this._label.fillColor = LABEL_TEXT_COLOR;
     this._label.content = _text;
     this._label.fontSize = LABEL_FONT_SIZE;
+    this._label.leading = 15;
     this._label.pivot = new paper.Point(0, 0);
     this.clip();
     this._background = new paper.Path.Rectangle({
@@ -39,18 +44,11 @@ export class LabelComponent extends paper.Group {
     this._background.pivot = new paper.Point(0, 0);
     this.addChild(this._background);
     this.addChild(this._label);
-    if (this.statusIndicatorColor !== undefined) {
-      this._background.bounds.width = this._background.bounds.width + STATUS_INDICATOR_MARGIN;
-      this._statusDot =
-          new paper.Path.Circle(new paper.Point(this.bounds.rightCenter.x - (LABEL_HEIGHT / 2), LABEL_HEIGHT / 2),
-              STATUS_DOT_RADIUS);
-      this._statusDot.fillColor = this.statusIndicatorColor;
-      this.addChild(this._statusDot);
-    }
   }
 
   setHover() {
     this._label.fillColor = HOVER_COLOR;
+    this._background.fillColor = HOVER_BG_COLOR;
   }
 
   setActive() {
@@ -59,6 +57,7 @@ export class LabelComponent extends paper.Group {
 
   setNormal() {
     this._label.fillColor = LABEL_TEXT_COLOR;
+    this._background.fillColor = LABEL_BACKGROUND_COLOR;
   }
 
   private clip() {

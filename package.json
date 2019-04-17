@@ -9,8 +9,9 @@
   "scripts": {
     "info": "npm-scripts-info",
     "lint": "tslint --project tsconfig.json --type-check",
-    "prepare": "npm run build",
-    "build": "rm -rf ./build && webpack --debug && webpack -p",
+    "build": "rm -rf ./build && webpack --mode production",
+    "serve-demo": "node --max_old_space_size=6144 node_modules/webpack-dev-server/bin/webpack-dev-server --config webpack.demo.config.js --mode development",
+    "build-demo": "rm -rf ./demo/dist && webpack --mode production --config webpack.demo.config.js",
     "docs": "typedoc src/index.ts --excludePrivate --exclude **/__*__/**/* --mode file --theme minimal --out build/docs"
   },
   "scripts-info": {
@@ -25,20 +26,45 @@
   "peerDependencies": {
     "iland-sdk": "1.x",
     "paper": "0.x",
-    "rxjs": "5.x"
+    "rxjs": "6.x"
   },
   "devDependencies": {
+    "@angular/common": "~7.2.0",
+    "@angular/compiler": "~7.2.0",
+    "@angular/core": "~7.2.0",
+    "@angular/forms": "~7.2.0",
+    "@angular/platform-browser": "~7.2.0",
+    "@angular/platform-browser-dynamic": "~7.2.0",
+    "@angular/router": "~7.2.0",
+    "@types/codemirror": "0.0.73",
     "@types/node": "7.0.12",
     "@types/paper": "^0.9.3",
+    "angular-router-loader": "0.8.5",
+    "codemirror": "^5.45.0",
+    "core-js": "^2.5.4",
+    "css-loader": "2.1.1",
+    "dts-bundle": "0.7.3",
+    "file-loader": "3.0.1",
+    "html-loader": "0.5.5",
+    "html-webpack-plugin": "3.2.0",
     "iland-sdk": "1.0.1",
+    "less": "3.9.0",
+    "less-loader": "4.1.0",
+    "ng-annotate-loader": "0.6.1",
     "paper": "0.x",
-    "dts-bundle": "^0.7.3",
-    "file-loader": "^0.11.2",
-    "ts-loader": "2.2.2",
-    "tslint": "5.5.0",
+    "raw-loader": "^2.0.0",
+    "rxjs": "^6.4.0",
+    "style-loader": "0.23.1",
+    "to-string-loader": "^1.1.5",
+    "ts-loader": "5.3.3",
+    "tslib": "1.9.3",
+    "tslint": "5.15.0",
     "tslint-config-standard": "6.0.1",
-    "typedoc": "0.7.1",
-    "typescript": "2.x",
-    "webpack": "3.x"
+    "typedoc": "0.14.2",
+    "typescript": "3.4.3",
+    "webpack": "4.29.6",
+    "webpack-cli": "3.3.0",
+    "webpack-dev-server": "3.3.1",
+    "zone.js": "~0.8.26"
   }
 }

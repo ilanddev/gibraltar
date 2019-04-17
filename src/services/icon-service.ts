@@ -1,5 +1,6 @@
 import * as paper from 'paper';
 import { OperatingSystem } from 'iland-sdk';
+import { ICON_SIZE } from '../constants/dimensions';
 
 const DEFAULT_ICON = require('../assets/icons/genericvmicon.svg');
 const EDGE_ICON = require('../assets/icons/edge.svg');
@@ -14,7 +15,7 @@ export abstract class IconService {
     if (!IconService.cache.has(os)) {
       IconService.cache.set(os, new Promise<paper.Symbol>(function(resolve) {
         paper.project.importSVG(IconService.getSvgUrlForOs(os), function(item: paper.Item) {
-          item.scale(40 / item.bounds.width, 40 / item.bounds.height);
+          item.scale(ICON_SIZE / item.bounds.width, ICON_SIZE / item.bounds.height);
           resolve(new paper.Symbol(item));
         });
       }));
@@ -29,7 +30,7 @@ export abstract class IconService {
       request.send(null);
       if (request.status === 200) {
         const item = paper.project.importSVG(request.response);
-        item.scale(40 / item.bounds.width, 40 / item.bounds.height);
+        item.scale(ICON_SIZE / item.bounds.width, ICON_SIZE / item.bounds.height);
         IconService.edgeIconSymbol = new paper.Symbol(item);
       }
     }
@@ -43,7 +44,7 @@ export abstract class IconService {
       request.send(null);
       if (request.status === 200) {
         const item = paper.project.importSVG(request.response);
-        item.scale(40 / item.bounds.width, 40 / item.bounds.height);
+        item.scale(ICON_SIZE / item.bounds.width, ICON_SIZE / item.bounds.height);
         IconService.defaultIconSymbol = new paper.Symbol(item);
       }
     }

@@ -17,19 +17,21 @@
     "noImplicitAny" : true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "lib" : [
       "es6", "dom"
     ],
-    "baseUrl": ".", // required for "paths"
-    "paths": {
-      "typescript-starter": ["src/index.ts"] // write tests without relative paths
-    }
+    "baseUrl": "."
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "demo/*.ts"
   ],
   "exclude": [
-    "node_modules/**"
+    "**/*.d.ts",
+    "node_modules",
+    "**/*.spec.ts"
   ],
   "compileOnSave": false
 }

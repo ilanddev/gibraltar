@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import * as paper from 'paper';
 
 const DEFAULT_BACKGROUND_COLOR = '#343B4E';
@@ -6,9 +6,12 @@ const DEFAULT_BACKGROUND_COLOR = '#343B4E';
 @Component({
   selector: 'demo',
   template: `
-    <div class="demo-component">
+    <div class="demo-component" #root>
       <div class="demo-title">{{ label }}</div>
       <p class="demo-description" *ngIf="description">{{ description }}</p>
+	    <div class="runnable-demo-ctrls" *ngIf="runnable">
+		    <button type="button" (click)="runClicked()">Run</button>
+	    </div>
 	    <canvas class="demo-canvas" #canvas></canvas>
     </div>
   `,
@@ -24,11 +27,21 @@ export class DemoComponent implements OnInit {
   @Input()
   description: string;
 
+  @Input()
+  runnable: boolean;
+
+  @Output()
+  run: EventEmitter<void> = new EventEmitter<void>();
+
   private project: paper.Project;
 
   ngOnInit(): void {
     this.project = new paper.Project(this.canvas.nativeElement);
     this.backgroundColor = DEFAULT_BACKGROUND_COLOR;
+  }
+
+  runClicked() {
+    this.run.emit();
   }
 
   /**

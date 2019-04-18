@@ -9,6 +9,7 @@ import { DemoComponent } from '../demo-component/demo.component';
   template: `
     <div id="vm-page">
       <vm-basic-demo></vm-basic-demo>
+	    <vm-create-demo></vm-create-demo>
     </div>
   `
 })

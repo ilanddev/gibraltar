@@ -11,6 +11,8 @@ export class VmComponent extends paper.Group {
 
   private _label: LabelComponent;
 
+  private animating: boolean = false;
+
   constructor(private _vm: VmData, private _point: paper.Point = new paper.Point(0, 0)) {
     super();
     const self = this;
@@ -28,6 +30,19 @@ export class VmComponent extends paper.Group {
 
   getVm(): VmData {
     return this._vm;
+  }
+
+  animateCreate() {
+    if (!this.animating) {
+      this.animating = true;
+      (this as any).tween({
+        'bounds.width': 1
+      }, {
+        'bounds.width': this.bounds.width
+      }, 500).then(() => {
+        this.animating = false;
+      });
+    }
   }
 
   private mouseEnter(event: paper.MouseEvent): void {

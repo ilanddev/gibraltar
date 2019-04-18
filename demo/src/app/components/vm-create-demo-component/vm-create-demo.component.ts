@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
-import { VmComponent } from '../../../../../src/components/vm-component';
 import * as paper from 'paper';
 import { DemoComponent } from '../demo-component/demo.component';
+import { VmComponent } from '../../../../../src/components/vm';
 
 @Component({
   selector: 'vm-create-demo',

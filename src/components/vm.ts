@@ -1,24 +1,37 @@
 import * as paper from 'paper';
-import { VmData } from '../model/vm-data';
 import { IconService } from '../services/icon-service';
-import { LabelComponent } from './label-component';
-import { IconLabelComponent } from './icon-label-component';
+import { OperatingSystem } from 'iland-sdk';
+import { IconLabelComponent } from './icon-label';
+
+export interface VmData {
+  operatingSystem: OperatingSystem;
+  name: string;
+  uuid: string;
+}
 
 /**
  * Virtual Machine Visual Component.
  */
 export class VmComponent extends paper.Group {
 
-  private _label: LabelComponent;
+  // the underlying icon label component
+  private _label: IconLabelComponent;
 
+  // a state variable that indicates whether an animation of this element is currently running
   private animating: boolean = false;
 
+  /**
+   * Creates a new VmComponent instance.
+   *
+   * @param _vm the vm data
+   * @param _point the location that the vm should be rendered at
+   */
   constructor(private _vm: VmData, private _point: paper.Point = new paper.Point(0, 0)) {
     super();
     const self = this;
     this.applyMatrix = false;
     this.position = _point;
-    let idx = 0;
+    this.pivot = new paper.Point(0, 0);
     self._label = new IconLabelComponent(self._vm.name,
         IconService.getOperatingSystemIcon(this._vm.operatingSystem),
         undefined);
@@ -28,10 +41,23 @@ export class VmComponent extends paper.Group {
     self.onMouseLeave = self.mouseLeave;
   }
 
-  getVm(): VmData {
+  /**
+   * Gets the VM data.
+   */
+  getVmData(): VmData {
     return this._vm;
   }
 
+  /**
+   * Gets the VM label component.
+   */
+  getLabelComponent(): IconLabelComponent {
+    return this._label;
+  }
+
+  /**
+   * Triggers the VM creation animation.
+   */
   animateCreate() {
     if (!this.animating) {
       this.animating = true;
@@ -45,11 +71,19 @@ export class VmComponent extends paper.Group {
     }
   }
 
+  /**
+   * Handler for the mouse enter event.
+   * @param event {paper.MouseEvent}
+   */
   private mouseEnter(event: paper.MouseEvent): void {
     this._label.setHover();
     paper.view.element.style.cursor = 'pointer';
   }
 
+  /**
+   * Handler for the mouse leave event.
+   * @param event {paper.MouseEvent}
+   */
   private mouseLeave(event: paper.MouseEvent): void {
     this._label.setNormal();
     paper.view.element.style.cursor = 'default';

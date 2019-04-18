@@ -1,8 +1,4 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
-import { VmComponent } from '../../../../../src/components/vm-component';
-import * as paper from 'paper';
-import { OperatingSystem } from 'iland-sdk';
-import { DemoComponent } from '../demo-component/demo.component';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'vm-demo',

@@ -5,6 +5,7 @@ import * as paper from 'paper';
  */
 export class Gibraltar {
 
+  // the canvas that the visualization is being rendered to
   private canvas: HTMLCanvasElement;
 
   constructor(canvas: string | HTMLCanvasElement) {

@@ -12,6 +12,7 @@
     "traceResolution": false,
     "pretty": true,
     "strictNullChecks": true,
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny" : true,

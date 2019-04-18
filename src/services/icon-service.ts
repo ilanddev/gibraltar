@@ -1,21 +1,30 @@
 import * as paper from 'paper';
 import { OperatingSystem } from 'iland-sdk';
-import { ICON_SIZE } from '../constants/dimensions';
+import { VM_ICON_SIZE } from '../constants/dimensions';
 
 const DEFAULT_ICON = require('../assets/icons/genericvmicon.svg');
-const EDGE_ICON = require('../assets/icons/edge.svg');
 
+/**
+ * Icon Service.
+ */
 export abstract class IconService {
 
-  private static defaultIconSymbol: paper.Symbol|undefined;
-  private static edgeIconSymbol: paper.Symbol|undefined;
+  // cached default operating system icon symbol
+  private static defaultIconSymbol: paper.Symbol | undefined;
+  // cache of operating system icon symbols
   private static cache: Map<OperatingSystem, Promise<paper.Symbol>> = new Map();
 
+  /**
+   * Gets an operating system icon symbol.
+   *
+   * @param os {OperatingSystem}
+   * @returns a promise that resolves with a paper Symbol
+   */
   static async getOperatingSystemIcon(os: OperatingSystem): Promise<paper.Symbol> {
     if (!IconService.cache.has(os)) {
       IconService.cache.set(os, new Promise<paper.Symbol>(function(resolve) {
         paper.project.importSVG(IconService.getSvgUrlForOs(os), function(item: paper.Item) {
-          item.scale(ICON_SIZE / item.bounds.width, ICON_SIZE / item.bounds.height);
+          item.scale(VM_ICON_SIZE / item.bounds.width, VM_ICON_SIZE / item.bounds.height);
           resolve(new paper.Symbol(item));
         });
       }));
@@ -23,6 +32,11 @@ export abstract class IconService {
     return IconService.cache.get(os)!;
   }
 
+  /**
+   * Gets the default VM icon symbol.
+   *
+   * @returns the paper Symbol
+   */
   static getDefaultIcon(): paper.Symbol {
     if (IconService.defaultIconSymbol === undefined) {
       const request = new XMLHttpRequest();
@@ -30,13 +44,21 @@ export abstract class IconService {
       request.send(null);
       if (request.status === 200) {
         const item = paper.project.importSVG(request.response);
-        item.scale(ICON_SIZE / item.bounds.width, ICON_SIZE / item.bounds.height);
+        item.scale(VM_ICON_SIZE / item.bounds.width, VM_ICON_SIZE / item.bounds.height);
         IconService.defaultIconSymbol = new paper.Symbol(item);
+      } else {
+        // dummy case for unit testing
+        return new paper.Symbol(new paper.Path.Rectangle(new paper.Point(0, 0)));
       }
     }
-    return IconService.defaultIconSymbol!;
+    return IconService.defaultIconSymbol;
   }
 
+  /**
+   * Gets the URL of the SVG that corresponds to the specified operating system.
+   *
+   * @param os {OperatingSystem}
+   */
   private static getSvgUrlForOs(os: OperatingSystem): string {
     switch (os) {
       case 'ubuntuGuest' as OperatingSystem:

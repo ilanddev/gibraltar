@@ -77,7 +77,7 @@ export class VmComponent extends paper.Group {
    */
   private mouseEnter(event: paper.MouseEvent): void {
     this._label.setHover();
-    paper.view.element.style.cursor = 'pointer';
+    this.project.view.element.style.cursor = 'pointer';
   }
 
   /**
@@ -86,7 +86,7 @@ export class VmComponent extends paper.Group {
    */
   private mouseLeave(event: paper.MouseEvent): void {
     this._label.setNormal();
-    paper.view.element.style.cursor = 'default';
+    this.project.view.element.style.cursor = 'default';
   }
 
 }

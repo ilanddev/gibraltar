@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="60px" height="60px" viewBox="0 0 60 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>windows</title>
-    <defs>
-        <path id="path-1" d="M0,54 a 6 6 0 0 0 6 6 h54 v-60 h-54 a 6 6 0 0 0 -6 6z"/>
-    </defs>
-    <g id="Iland-Cloud" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="VM-Logo-Library" transform="translate(-43.000000, -123.000000)">
-            <g id="windows_rounded" transform="translate(43.000000, 123.000000)">
-                <mask id="mask-2" fill="white">
-                    <use xlink:href="#path-1"></use>
-                </mask>
-                <use id="Rectangle-13" fill="#0078D6" xlink:href="#path-1"></use>
-                <path d="M15,20.0234556 L26.5775729,18.44671 L26.5826338,29.6142161 L15.0105761,29.6801155 L15,20.0234556 Z M26.5720577,30.9009303 L26.5810441,42.078169 L15.0089864,40.4871814 L15.0083376,30.8259568 L26.5720577,30.9009303 Z M27.9755306,18.2404438 L43.3264313,16 L43.3264313,29.4721851 L27.9755306,29.5940534 L27.9755306,18.2404438 Z M43.3299999,31.0060423 L43.3263989,44.4175609 L27.9754982,42.250955 L27.9539892,30.9809322 L43.3299999,31.0060423 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero" mask="url(#mask-2)"></path>
+    <!-- Generator: sketchtool 53.1 (72631) - https://sketchapp.com -->
+    <title>51B8DF2E-5111-4CD7-8CE1-45F55DE4AE13</title>
+    <desc>Created with sketchtool.</desc>
+    <g id="Secure-Cloud-V9" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="VM-Logo-Library" transform="translate(-49.000000, -123.000000)">
+            <g id="windows_square" transform="translate(49.000000, 123.000000)">
+                <path d="M0,6.0000383 C0,2.68630865 2.69463714,0 6.0000383,0 L60,0 L60,60 L6.0000383,60 C2.68630865,60 0,57.3053629 0,53.9999617 L0,6.0000383 Z" id="Rectangle-14" fill="#0078D6"></path>
+                <path d="M13,17.8138364 L26.8947221,15.9273497 L26.900796,29.2886375 L13.0126928,29.3674824 L13,17.8138364 Z M26.8881032,30.828118 L26.8988882,44.2010503 L13.010785,42.2975238 L13.0100063,30.7384166 L26.8881032,30.828118 Z M28.5724689,15.680564 L46.9957172,13 L46.9957172,29.1187054 L28.5724689,29.264514 L28.5724689,15.680564 Z M47,30.9538786 L46.9956782,47 L28.5724299,44.407779 L28.546616,30.9238358 L47,30.9538786 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero"></path>
             </g>
         </g>
     </g>

@@ -7,7 +7,7 @@ import { VmComponent } from '../../../../../src/components/vm';
 @Component({
   selector: 'vm-basic-demo',
   template: `
-	  <demo label="Basic icons and styles" height="510"
+	  <demo label="Basic icons and styles" height="460"
           description="This example demonstrates the fundamental styling of the VM visual component and enumerates all
           of the supported VM operating system icons."></demo>
   ` })
@@ -30,61 +30,61 @@ export class VmBasicDemoComponent implements AfterViewInit {
       name: 'fedora',
       uuid: '',
       operatingSystem: 'fedora64Guest'
-    }, new paper.Point(15, 60));
+    }, new paper.Point(15, 55));
     // tslint:disable-next-line
     new VmComponent({
       name: 'windows',
       uuid: '',
       operatingSystem: 'windows7Guest'
-    }, new paper.Point(15, 105));
+    }, new paper.Point(15, 95));
     // tslint:disable-next-line
     new VmComponent({
       name: 'windows xp',
       uuid: '',
       operatingSystem: 'winXPHomeGuest'
-    }, new paper.Point(15, 150));
+    }, new paper.Point(15, 135));
     // tslint:disable-next-line
     new VmComponent({
       name: 'debian',
       uuid: '',
       operatingSystem: 'debian8Guest'
-    }, new paper.Point(15, 195));
+    }, new paper.Point(15, 175));
     // tslint:disable-next-line
     new VmComponent({
       name: 'redhat',
       uuid: '',
       operatingSystem: 'redhatGuest'
-    }, new paper.Point(15, 240));
+    }, new paper.Point(15, 215));
     // tslint:disable-next-line
     new VmComponent({
       name: 'generic linux',
       uuid: '',
       operatingSystem: 'other24xLinux64Guest'
-    }, new paper.Point(15, 285));
+    }, new paper.Point(15, 255));
     // tslint:disable-next-line
     new VmComponent({
       name: 'centos',
       uuid: '',
       operatingSystem: 'centos64Guest'
-    }, new paper.Point(15, 330));
+    }, new paper.Point(15, 295));
     // tslint:disable-next-line
     new VmComponent({
       name: 'free bsd',
       uuid: '',
       operatingSystem: 'freebsd64Guest'
-    }, new paper.Point(15, 375));
+    }, new paper.Point(15, 335));
     // tslint:disable-next-line
     new VmComponent({
       name: 'core os',
       uuid: '',
       operatingSystem: 'coreos64Guest'
-    }, new paper.Point(15, 420));
+    }, new paper.Point(15, 375));
     // tslint:disable-next-line
     new VmComponent({
       name: 'generic operating system with long name',
       uuid: '',
       operatingSystem: 'other' as OperatingSystem
-    }, new paper.Point(15, 465));
+    }, new paper.Point(15, 415));
   }
 
 }

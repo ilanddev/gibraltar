@@ -2,6 +2,8 @@ import * as paper from 'paper';
 import { IconService } from '../services/icon-service';
 import { OperatingSystem } from 'iland-sdk';
 import { IconLabelComponent } from './icon-label';
+import { CanvasEventService } from '../services/canvas-event-service';
+import { Subscription } from 'rxjs';
 
 const SIZE_DELTA_ON_HOVER = 2;
 
@@ -19,8 +21,9 @@ export class VmComponent extends paper.Group {
   // the underlying icon label component
   private _label: IconLabelComponent;
 
-  // a state variable that indicates whether an animation of this element is currently running
+  private canvasEvtSubscription: Subscription;
   private hovering: boolean = false;
+  private active: boolean = false;
   private defaultWidth: number;
   private defaultX: number;
   private defaultY: number;
@@ -44,6 +47,10 @@ export class VmComponent extends paper.Group {
     self.addChild(self._label);
     self.onMouseEnter = self.mouseEnter;
     self.onMouseLeave = self.mouseLeave;
+    self.onMouseUp = self.mouseUp;
+    this.canvasEvtSubscription = CanvasEventService.getObservable(this.project, 'mousedown').subscribe(evt => {
+      self.canvasMouseDown(evt);
+    });
     this.defaultWidth = this.bounds.width;
     this.defaultX = this.bounds.x;
     this.defaultY = this.bounds.y;
@@ -75,6 +82,14 @@ export class VmComponent extends paper.Group {
   }
 
   /**
+   * Removes this component.
+   */
+  remove(): boolean {
+    this.canvasEvtSubscription.unsubscribe();
+    return super.remove();
+  }
+
+  /**
    * Handler for the mouse enter event.
    * @param event {paper.MouseEvent}
    */
@@ -88,7 +103,9 @@ export class VmComponent extends paper.Group {
         'bounds.width': this.defaultWidth + 2 * SIZE_DELTA_ON_HOVER,
         'bounds.x': this.defaultX - SIZE_DELTA_ON_HOVER
       }, 100);
-      this._label.setHover();
+      if (!this.active) {
+        this._label.setHover();
+      }
       this.project.view.element.style.cursor = 'pointer';
     }
   }
@@ -109,9 +126,33 @@ export class VmComponent extends paper.Group {
           'bounds.width': this.defaultWidth,
           'bounds.x': this.defaultX
         }, 100);
-        this._label.setNormal();
+        if (!this.active) {
+          this._label.setNormal();
+        }
         this.project.view.element.style.cursor = 'default';
       }
+    }
+  }
+
+  /**
+   * Handler for mouse up events.
+   * @param event {paper.MouseEvent}
+   */
+  private mouseUp(event: paper.MouseEvent): void {
+    if (!this.active) {
+      this.active = true;
+      this._label.setActive();
+    }
+  }
+
+  /**
+   * Handler for the containting canvas mouse down event.
+   * @param event {paper.MouseEvent}
+   */
+  private canvasMouseDown(event: paper.MouseEvent): void {
+    if (this.active && !this.hitTest(event.point)) {
+      this.active = false;
+      this._label.setNormal();
     }
   }
 

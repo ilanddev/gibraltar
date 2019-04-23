@@ -4,6 +4,8 @@ import { LABEL_HORIZONTAL_PADDING } from '../constants/dimensions';
 const HEIGHT = 30;
 const TEXT_COLOR = '#FFFFFF';
 const TEXT_HOVER_COLOR = '#FFFFFF';
+const ACTIVE_TEXT_COLOR = '#252A3A';
+const ACTIVE_BACKGROUND_COLOR = '#FFFFFF';
 const BACKGROUND_COLOR = '#191C28';
 const HOVER_BACKGROUND_COLOR = '#242A3B';
 export const VERTICAL_PADDING_TOP = 6;
@@ -82,6 +84,14 @@ export class LabelComponent extends paper.Group {
   setNormal() {
     this._label.fillColor = TEXT_COLOR;
     this._background.fillColor = BACKGROUND_COLOR;
+  }
+
+  /**
+   * Sets the label to its visual active state;
+   */
+  setActive() {
+    this._label.fillColor = ACTIVE_TEXT_COLOR;
+    this._background.fillColor = ACTIVE_BACKGROUND_COLOR;
   }
 
   /**

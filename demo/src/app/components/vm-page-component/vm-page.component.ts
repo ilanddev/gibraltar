@@ -6,6 +6,7 @@ import { Component } from '@angular/core';
     <div id="vm-page">
       <vm-basic-demo></vm-basic-demo>
 	    <vm-create-demo></vm-create-demo>
+	    <vm-delete-demo></vm-delete-demo>
     </div>
   `
 })

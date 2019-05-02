@@ -4,13 +4,13 @@ import { DemoComponent } from '../demo-component/demo.component';
 import { VmComponent } from '../../../../../src/components/vm';
 
 @Component({
-  selector: 'vm-create-demo',
+  selector: 'vm-delete-demo',
   template: `
-	  <demo label="Creation Animation" height="140"
-          description="Demonstrates the animation associated with VM creation."
+	  <demo label="Deletion Animation" height="140"
+          description="Demonstrates the animation associated with VM deletion."
           runnable="true" (run)="run()" (reset)="reset()"></demo>
   ` })
-export class VmCreateDemoComponent implements AfterViewInit {
+export class VmDeleteDemoComponent implements AfterViewInit {
 
   @ViewChild(DemoComponent)
   demo: DemoComponent;
@@ -26,26 +26,26 @@ export class VmCreateDemoComponent implements AfterViewInit {
       name: 'fedora',
       uuid: '',
       operatingSystem: 'fedora64Guest'
-    }, new paper.Point(15, 15));
+    }, new paper.Point(15, 15), true);
     this.vmTwo = new VmComponent({
       name: 'redhat linux vm',
       uuid: '',
       operatingSystem: 'redhatGuest'
-    }, new paper.Point(15, 55));
+    }, new paper.Point(15, 55), true);
     this.vmThree = new VmComponent({
       name: 'centos vm with a really long name',
       uuid: '',
       operatingSystem: 'centos64Guest'
-    }, new paper.Point(15, 95));
+    }, new paper.Point(15, 95), true);
   }
 
   run() {
-    this.vmOne.animateCreate();
+    this.vmOne.animateDelete();
     setTimeout(() => {
-      this.vmTwo.animateCreate();
+      this.vmTwo.animateDelete();
     }, 1500);
     setTimeout(() => {
-      this.vmThree.animateCreate();
+      this.vmThree.animateDelete();
     }, 3000);
   }
 

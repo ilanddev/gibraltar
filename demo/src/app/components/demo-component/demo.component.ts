@@ -10,7 +10,8 @@ const DEFAULT_BACKGROUND_COLOR = '#343B4E';
       <div class="demo-title">{{ label }}</div>
       <p class="demo-description" *ngIf="description">{{ description }}</p>
 	    <div class="runnable-demo-ctrls" *ngIf="runnable">
-		    <button type="button" (click)="runClicked()">Run</button>
+		    <button type="button" [disabled]="activeButton === 'RUN'" (click)="resetClicked()">Reset</button>
+		    <button type="button" [disabled]="activeButton === 'RESET'" (click)="runClicked()">Run</button>
 	    </div>
 	    <canvas class="demo-canvas" #canvas></canvas>
     </div>
@@ -33,7 +34,12 @@ export class DemoComponent implements OnInit {
   @Output()
   run: EventEmitter<void> = new EventEmitter<void>();
 
+  @Output()
+  reset: EventEmitter<void> = new EventEmitter<void>();
+
   private project: paper.Project;
+
+  private activeButton: 'RESET' | 'RUN' = 'RUN';
 
   ngOnInit(): void {
     this.project = new paper.Project(this.canvas.nativeElement);
@@ -41,7 +47,13 @@ export class DemoComponent implements OnInit {
   }
 
   runClicked() {
+    this.activeButton = 'RESET';
     this.run.emit();
+  }
+
+  resetClicked() {
+    this.activeButton = 'RUN';
+    this.reset.emit();
   }
 
   /**

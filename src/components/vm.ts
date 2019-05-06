@@ -27,14 +27,19 @@ export class VmComponent extends paper.Group {
   private defaultWidth: number;
   private defaultX: number;
   private defaultY: number;
+  private creating: boolean = false;
+  private deleting: boolean = false;
 
   /**
    * Creates a new VmComponent instance.
    *
    * @param _vm the vm data
    * @param _point the location that the vm should be rendered at
+   * @param visible whether the component is immediate visible (default is false because typically the component is
+   * rendered with a creation animation
    */
-  constructor(private _vm: VmData, private _point: paper.Point = new paper.Point(0, 0)) {
+  constructor(private _vm: VmData, private _point: paper.Point = new paper.Point(0, 0),
+              visible: boolean = false) {
     super();
     const self = this;
     this.applyMatrix = false;
@@ -54,6 +59,7 @@ export class VmComponent extends paper.Group {
     this.defaultWidth = this.bounds.width;
     this.defaultX = this.bounds.x;
     this.defaultY = this.bounds.y;
+    this.visible = visible;
   }
 
   /**
@@ -71,14 +77,43 @@ export class VmComponent extends paper.Group {
   }
 
   /**
+   * Triggers the VM deletion animation.
+   */
+  async animateDelete(): Promise<void> {
+    if (!this.deleting) {
+      this.deleting = true;
+      return new Promise(resolve => {
+        (this as any).tween({
+          'bounds.width': this.bounds.width,
+          'bounds.x': this.bounds.x,
+          'bounds.height': this.bounds.height,
+          'bounds.y': this.bounds.y
+        }, {
+          'bounds.width': 0,
+          'bounds.x': this.bounds.x + this.bounds.width / 2,
+          'bounds.height': 0,
+          'bounds.y': this.bounds.y + this.bounds.height / 2
+        }, 200).then(() => {
+          this.visible = false;
+          resolve();
+        });
+      });
+    }
+    return Promise.reject('animation already running');
+  }
+
+  /**
    * Triggers the VM creation animation.
    */
-  animateCreate() {
-    (this as any).tween({
-      'bounds.width': 1
-    }, {
-      'bounds.width': this.defaultWidth
-    }, 500);
+  async animateCreate(): Promise<void> {
+    if (!this.creating) {
+      this.visible = true;
+      this.creating = true;
+      return this._label.animateCreate().then(() => {
+        this.creating = false;
+      });
+    }
+    return Promise.reject('animation already running');
   }
 
   /**
@@ -94,7 +129,7 @@ export class VmComponent extends paper.Group {
    * @param event {paper.MouseEvent}
    */
   private mouseEnter(event: paper.MouseEvent): void {
-    if (!this.hovering) {
+    if (!this.hovering && !this.creating) {
       this.hovering = true;
       (this as any).tween({
         'bounds.width': this.defaultWidth,

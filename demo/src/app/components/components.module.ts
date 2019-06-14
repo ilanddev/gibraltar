@@ -9,6 +9,11 @@ import { DemoComponent } from './demo-component/demo.component';
 import { VmPageComponent } from './vm-page-component/vm-page.component';
 import { VmCreateDemoComponent } from './vm-create-demo-component/vm-create-demo.component';
 import { VmDeleteDemoComponent } from './vm-delete-demo-component/vm-delete-demo.component';
+import { MiscPageComponent } from './misc-page-component/misc-page.component';
+import { MiscScrollbarHorizontalDemoComponent } from
+    './misc-scrollbar-demo-component/misc-scrollbar-horizontal-demo.component';
+import { MiscScrollbarVerticalDemoComponent } from
+    './misc-scrollbar-demo-component/misc-scrollbar-vertical-demo.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +22,10 @@ import { VmDeleteDemoComponent } from './vm-delete-demo-component/vm-delete-demo
     VmDeleteDemoComponent,
     VmBasicDemoComponent,
     ComponentsPageComponent,
-    DemoComponent
+    DemoComponent,
+    MiscPageComponent,
+    MiscScrollbarHorizontalDemoComponent,
+    MiscScrollbarVerticalDemoComponent
   ],
   imports: [
     ComponentsRoutingModule,

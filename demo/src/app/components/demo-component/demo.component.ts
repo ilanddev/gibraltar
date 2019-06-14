@@ -13,7 +13,7 @@ const DEFAULT_BACKGROUND_COLOR = '#343B4E';
 		    <button type="button" [disabled]="activeButton === 'RUN'" (click)="resetClicked()">Reset</button>
 		    <button type="button" [disabled]="activeButton === 'RESET'" (click)="runClicked()">Run</button>
 	    </div>
-	    <canvas class="demo-canvas" #canvas></canvas>
+	    <canvas class="demo-canvas" #canvas resize></canvas>
     </div>
   `,
   styles: [require('./demo.component.less')]

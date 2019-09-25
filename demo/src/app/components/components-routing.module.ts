@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ComponentsPageComponent } from './components-page/components-page.component';
 import { VmPageComponent } from './vm-page-component/vm-page.component';
+import { VappPageComponent } from './vapp-page-component/vapp-page.component';
 import { MiscPageComponent } from './misc-page-component/misc-page.component';
 
 const routes = [
@@ -16,6 +17,9 @@ const routes = [
       },
       {
         path: 'vm', component: VmPageComponent
+      },
+      {
+        path: 'vapp', component: VappPageComponent
       },
       {
         path: 'misc', component: MiscPageComponent

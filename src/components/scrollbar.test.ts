@@ -3,7 +3,7 @@ import { ScrollbarComponent } from './scrollbar';
 
 describe('scrollbar component', () => {
 
-  beforeEach(() => {
+  beforeAll(() => {
     const canvasEl = document.createElement('canvas');
     paper.setup(canvasEl);
   });

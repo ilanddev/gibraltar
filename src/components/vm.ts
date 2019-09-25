@@ -4,13 +4,16 @@ import { OperatingSystem } from 'iland-sdk';
 import { IconLabelComponent } from './icon-label';
 import { CanvasEventService } from '../services/canvas-event-service';
 import { Subscription } from 'rxjs';
+import { VnicData } from './vnic';
 
 const SIZE_DELTA_ON_HOVER = 2;
 
 export interface VmData {
-  operatingSystem: OperatingSystem;
-  name: string;
   uuid: string;
+  name: string;
+  vapp_uuid: string;
+  operatingSystem: OperatingSystem;
+  vnics: VnicData[];
 }
 
 /**
@@ -38,7 +41,8 @@ export class VmComponent extends paper.Group {
    * @param visible whether the component is immediate visible (default is false because typically the component is
    * rendered with a creation animation
    */
-  constructor(private _vm: VmData, private _point: paper.Point = new paper.Point(0, 0),
+  constructor(private _vm: VmData,
+              private _point: paper.Point = new paper.Point(0, 0),
               visible: boolean = false) {
     super();
     const self = this;
@@ -151,7 +155,7 @@ export class VmComponent extends paper.Group {
    */
   private mouseLeave(event: paper.MouseEvent): void {
     if (this.hovering) {
-      const result = this.hitTest(event.point);
+      const result = this._label.hitTest(this.globalToLocal(event.point));
       if (!result) {
         this.hovering = false;
         (this as any).tween({
@@ -181,7 +185,7 @@ export class VmComponent extends paper.Group {
   }
 
   /**
-   * Handler for the containting canvas mouse down event.
+   * Handler for the containing canvas mouse down event.
    * @param event {paper.MouseEvent}
    */
   private canvasMouseDown(event: paper.MouseEvent): void {

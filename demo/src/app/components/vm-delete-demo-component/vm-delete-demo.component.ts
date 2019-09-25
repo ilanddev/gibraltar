@@ -23,19 +23,25 @@ export class VmDeleteDemoComponent implements AfterViewInit {
     const proj = this.demo.getProject();
     proj.activate();
     this.vmOne = new VmComponent({
-      name: 'fedora',
       uuid: '',
-      operatingSystem: 'fedora64Guest'
+      name: 'fedora',
+      vapp_uuid: '',
+      operatingSystem: 'fedora64Guest',
+      vnics: []
     }, new paper.Point(15, 15), true);
     this.vmTwo = new VmComponent({
-      name: 'redhat linux vm',
       uuid: '',
-      operatingSystem: 'redhatGuest'
+      name: 'redhat linux vm',
+      vapp_uuid: '',
+      operatingSystem: 'redhatGuest',
+      vnics: []
     }, new paper.Point(15, 55), true);
     this.vmThree = new VmComponent({
-      name: 'centos vm with a really long name',
       uuid: '',
-      operatingSystem: 'centos64Guest'
+      name: 'centos vm with a really long name',
+      vapp_uuid: '',
+      operatingSystem: 'centos64Guest',
+      vnics: []
     }, new paper.Point(15, 95), true);
   }
 

@@ -55,6 +55,8 @@ class CustomEffects {
  * Scrollbar Visual Component.
  */
 export class ScrollbarComponent extends paper.Group {
+
+  static anyIsDragging: boolean = false;
   protected scrollbar: paper.Path;
   protected track: paper.Path;
   protected scrollAmount: number;
@@ -67,10 +69,14 @@ export class ScrollbarComponent extends paper.Group {
   private dimension: (keyof paper.Rectangle);
   // content's original position. used to constrain content position while scrolling
   private contentInitialPosition: number;
-  // scrollbar is rendered and enabled when it's needed
-  private isEnabled: boolean = true;
+  // scrollbar is visible and interactive when container is hovered
+  private isActivatable: boolean = false;
+  // scrollbar is enabled when content does not fit container
+  private _isEnabled: boolean = true;
   private containerSize: number;
+  // make a bigger area to make the track easier to interact with
   private extendedTrackArea: paper.Path.Rectangle;
+  // make a bigger area to make the scrollbar easier to interact with
   private extendedScrollbarArea: paper.Path.Rectangle;
   private arrowKeyDown: paper.Tool;
   private scrollbarDrag: paper.Tool;
@@ -151,13 +157,44 @@ export class ScrollbarComponent extends paper.Group {
     this.onClick = this.trackClick;
     this.scrollbarDrag = this.scrollbarDragTool();
     this.arrowKeyDown = this.arrowKeyDownTool();
+
+    // not visible until container is hovered and no other scrollbars are currently in dragging state
+    this.visible = false;
+  }
+
+  /**
+   * Gets isEnabled state. The scrollbar is enabled when content does not fit the container.
+   */
+  get isEnabled(): boolean {
+    return this._isEnabled;
+  }
+
+  /**
+   * Handler for container mouse enter event.
+   */
+  containerMouseEnter = (): void => {
+    if (!ScrollbarComponent.anyIsDragging) {
+      this.isActivatable = true;
+      this.visible = true;
+      this.activateDefaultTool();
+    }
+  }
+
+  /**
+   * Handler for container mouse leave event.
+   */
+  containerMouseLeave = (): void => {
+    if (!ScrollbarComponent.anyIsDragging) {
+      this.isActivatable = false;
+      this.visible = false;
+    }
   }
 
   /**
    * Activate the default tool. Used when the scrollable container is hovered or active.
    */
   activateDefaultTool(): void {
-    if (this.isEnabled) {
+    if (this.isActivatable) {
       this.arrowKeyDown.activate();
     }
   }
@@ -176,7 +213,7 @@ export class ScrollbarComponent extends paper.Group {
    * };
    */
   onScroll(event: WheelEvent): void {
-    if (this.isEnabled) {
+    if (this.isActivatable) {
       const validScrollDirection = this.isHorizontal ? event.deltaX !== 0 : event.deltaY !== 0;
       if (!validScrollDirection) {
         return;
@@ -290,15 +327,16 @@ export class ScrollbarComponent extends paper.Group {
    * Enable scrollbar visibility and interactivity.
    */
   private enable(): void {
-    this.isEnabled = true;
+    this._isEnabled = true;
     this.addChildren([this.track, this.scrollbar, this.extendedTrackArea]);
   }
 
   /**
-   * Disable scrollbar visibility and interactivity.
+   * Disable scrollbar component elements and interactivity.
    */
   private disable(): void {
-    this.isEnabled = false;
+    this.isActivatable = false;
+    this._isEnabled = false;
     this.removeChildren();
   }
 
@@ -385,7 +423,9 @@ export class ScrollbarComponent extends paper.Group {
    * The proportionate length for the scrollbar. Based on viewable content size divided by the full content size.
    */
   private getProportionalLength(): number {
-    return (this.containerSize / this.contentSizeWithOffsets()) * this.scrollTrackLength;
+    const fullSize = this.contentSizeWithOffsets() + (this.scrollable.contentOffsetEnd || 0)
+      - (this.scrollable.contentOffsetStart || 0);
+    return this.containerSize / fullSize * this.scrollTrackLength;
   }
 
   /**
@@ -523,21 +563,32 @@ export class ScrollbarComponent extends paper.Group {
     let offsetPoint: paper.Point;
     tool.onMouseDown = (event) => {
       this.dragging = true;
+      ScrollbarComponent.anyIsDragging = true;
       this.project.view.element.style.cursor = 'grabbing';
       offsetPoint = new paper.Point(event.downPoint.subtract(this.scrollbar.position));
     };
-    tool.onMouseUp = () => {
+    tool.onMouseUp = (event: paper.ToolEvent) => {
       this.dragging = false;
+      ScrollbarComponent.anyIsDragging = false;
       this.project.view.element.style.cursor = this.hovering ? 'pointer' : 'default';
+      // set visibility based on if content is holding the current point
+      if (!this.scrollable.containerBounds.contains(event.point)) {
+        this.visible = false;
+        // TODO: less kludgey way of activating default tool. it's the last one created in the demo, but is a very
+        //  temp fix. more tools can be added in the future, so this index won't always be correct
+        paper.tools[paper.tools.length - 1].activate();
+        this.setNormal();
+      }
     };
     tool.onMouseDrag = (event: paper.ToolEvent) => {
       this.setActive();
+      this.visible = true;
       return this.isHorizontal
         ? this.changeScrollAndContentPosition(event.point.x - offsetPoint.x)
         : this.changeScrollAndContentPosition(event.point.y - offsetPoint.y);
     };
-    // arrowKeyDown tool is inactive while hovering on the scrollbar and scrollbarDrag is active. this handles keyDown
-    // events
+    // arrowKeyDown tool is inactive while hovering on the scrollbar and scrollbarDrag tool is active. this handles
+    // keyDown events
     tool.onKeyDown = (event) => {
       this.moveByKeyDown(event);
       this.activateDefaultTool();

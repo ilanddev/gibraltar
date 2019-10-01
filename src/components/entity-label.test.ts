@@ -7,6 +7,7 @@ describe('entity label component', () => {
   beforeAll(() => {
     const canvasEl = document.createElement('canvas');
     paper.setup(canvasEl);
+    paper.settings.applyMatrix = false;
   });
 
   test('basic properties', () => {
@@ -19,18 +20,18 @@ describe('entity label component', () => {
     expect(label.icon.fillColor).toBe(color);
   });
 
-  test('fontWeight', () => {
+  test('textOptions', () => {
     const text = 'foobar';
     const position = new paper.Point(10, 90);
     const color = new paper.Color('blue');
-    const fontWeight = 'bold';
-    const label = new EntityLabelComponent(text, color, position, fontWeight);
+    const textOptions = { fontWeight: 'bold' };
+    const label = new EntityLabelComponent(text, color, position, textOptions);
     expect(label.position.x).toBe(position.x);
     expect(label.position.y).toBe(position.y);
     expect(label.icon.fillColor).toBe(color);
-    expect(label.getTextComponent().fontWeight).toBe(fontWeight);
+    expect(label.text.fontWeight).toBe(textOptions.fontWeight);
     expect(label.bounds.right - LABEL_HORIZONTAL_PADDING)
-      .toBe(label.localToGlobal(label.getTextComponent().bounds.bottomRight).x);
+      .toBe(label.localToGlobal(label.text.bounds.bottomRight).x);
   });
 
 });

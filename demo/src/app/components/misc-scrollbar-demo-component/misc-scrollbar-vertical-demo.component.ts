@@ -22,10 +22,8 @@ export class MiscScrollbarVerticalDemoComponent implements AfterViewInit {
     // sets up Paper Project
     const proj = this.demo.getProject();
     proj.activate();
-    proj.activeLayer.applyMatrix = false;
     this.demo.backgroundColor = CANVAS_BACKGROUND_COLOR;
     const view = paper.view;
-    const canvas = paper.view.element;
     const VIEW_PADDING = 30;
 
     // create content
@@ -55,6 +53,7 @@ export class MiscScrollbarVerticalDemoComponent implements AfterViewInit {
     // create scrollbar
     const scrollbar = new ScrollbarComponent({
       content: content,
+      container: view.element,
       containerBounds: view.bounds,
       contentOffsetEnd: VIEW_PADDING
     },
@@ -62,15 +61,6 @@ export class MiscScrollbarVerticalDemoComponent implements AfterViewInit {
       view.bounds.height - VIEW_PADDING * 2,
       'vertical'
     );
-    if (scrollbar.isEnabled) {
-      canvas.onmouseenter = scrollbar.containerMouseEnter;
-      canvas.onmouseleave = scrollbar.containerMouseLeave;
-
-      // add scroll listening. paper doesn't have a wheel event handler
-      canvas.onwheel = (event: WheelEvent) => {
-        scrollbar.onScroll(event);
-      };
-    }
 
   }
 

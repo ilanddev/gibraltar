@@ -42,6 +42,9 @@ export class DemoComponent implements OnInit {
   private activeButton: 'RESET' | 'RUN' = 'RUN';
 
   ngOnInit(): void {
+    // apply this setting globally in the demo, so child components behave relatively to their parent component.
+    // disable on an individual basis by setting the item's applyMatrix property to `true`
+    paper.settings.applyMatrix = false;
     this.project = new paper.Project(this.canvas.nativeElement);
     this.backgroundColor = DEFAULT_BACKGROUND_COLOR;
   }

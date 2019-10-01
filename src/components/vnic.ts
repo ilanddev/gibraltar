@@ -1,5 +1,5 @@
 import * as paper from 'paper';
-import { ConnectorComponent } from './connector';
+import { ConnectionIconComponent } from './connection-icon';
 import { VAPP_BACKGROUND_COLOR } from '../constants/colors';
 import { DEFAULT_STROKE_STYLE } from '../constants/styles';
 
@@ -17,7 +17,7 @@ export interface VnicData {
  */
 export class VnicComponent extends paper.Group {
 
-  readonly icon: ConnectorComponent;
+  readonly icon: ConnectionIconComponent;
 
   /**
    * Creates a new VnicComponent instance.
@@ -27,10 +27,9 @@ export class VnicComponent extends paper.Group {
   constructor(private _vnic: VnicData,
               private _point: paper.Point = new paper.Point(0, 0)) {
     super();
-    this.applyMatrix = false;
     this.position = _point;
 
-    this.icon = new ConnectorComponent();
+    this.icon = new ConnectionIconComponent();
     this.addChild(this.icon);
 
     // draw additional icon visual elements (slash and circle cut) if vnic is disconnected

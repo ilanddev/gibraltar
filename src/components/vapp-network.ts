@@ -2,8 +2,8 @@ import * as paper from 'paper';
 import { CANVAS_BACKGROUND_COLOR } from '../constants/colors';
 import { IsolatedNetworkLabelComponent } from './isolated-network-label';
 import { VappEdgeLabelComponent } from './vapp-edge-label';
-import { ConnectorComponent } from './connector';
-import { SmallConnectorComponent } from './small-connector';
+import { ConnectionIconComponent } from './connection-icon';
+import { BulletPointConnectionIconComponent } from './bullet-point-connection-icon';
 import { CONNECTOR_RADIUS, CONNECTOR_MARGIN, VAPP_PADDING, LABEL_HEIGHT, DEFAULT_STROKE_WIDTH, LABEL_BOTTOM_PADDING }
   from '../constants/dimensions';
 import { DEFAULT_STROKE_STYLE } from '../constants/styles';
@@ -11,6 +11,9 @@ import { DEFAULT_STROKE_STYLE } from '../constants/styles';
 const MULTIPLE_ISOLATED_NETWORK_PADDING = 13;
 const ISOLATED_NETWORK_PADDING = 5;
 
+/**
+ * Enumeration of vApp fence modes.
+ */
 export type FenceMode = 'BRIDGED' | 'NAT_ROUTED' | 'ISOLATED';
 
 /**
@@ -30,7 +33,7 @@ export class VappNetworkComponent extends paper.Group {
 
   readonly _path: paper.Path.Line;
   // connection icon or isolated network label at the top of the network path
-  private connectionComponent: ConnectorComponent | IsolatedNetworkLabelComponent;
+  private connectionComponent: ConnectionIconComponent | IsolatedNetworkLabelComponent;
   readonly edgeLabel: VappEdgeLabelComponent;
   readonly isNatRouted: boolean = false;
   readonly isIsolated: boolean = false;
@@ -52,7 +55,6 @@ export class VappNetworkComponent extends paper.Group {
               private edgeNetworkCount: number = 0,
               private topmostPointY: number = 59) {
     super();
-    this.applyMatrix = false;
     this.pivot = new paper.Point(0, 0);
     this.position = this._point;
 
@@ -105,7 +107,7 @@ export class VappNetworkComponent extends paper.Group {
     // add the connection component based on network's fence mode
     this.connectionComponent = this.isIsolated
       ? new IsolatedNetworkLabelComponent(this._vappNetwork.name, topmostPoint)
-      : new ConnectorComponent(topmostPoint, CANVAS_BACKGROUND_COLOR);
+      : new ConnectionIconComponent(topmostPoint, CANVAS_BACKGROUND_COLOR);
     this.addChild(this.connectionComponent);
   }
 
@@ -125,7 +127,7 @@ export class VappNetworkComponent extends paper.Group {
     if (!this.isNatRouted) {
       // add the bottommost point and disconnected icon next to the vapp label
       this._path.add(new paper.Point(0, VAPP_PADDING + LABEL_HEIGHT / 2));
-      this.addChild(new SmallConnectorComponent(this._path.bounds.bottomCenter));
+      this.addChild(new BulletPointConnectionIconComponent(this._path.bounds.bottomCenter));
     } else {
       // add the bottommost point at the edge label's position
       this.path.add(new paper.Point(0, this.edgeLabel.position.y));

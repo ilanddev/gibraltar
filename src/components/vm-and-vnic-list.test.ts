@@ -2,7 +2,7 @@ import { VmAndVnicListComponent, LowestVnicPointByNetworkName } from './vm-and-v
 import { VappNetworkPositionsByName } from './vapp-network-list';
 import { VmData } from './vm';
 import * as paper from 'paper';
-import { LABEL_HEIGHT, VM_MARGIN_VERTICAL } from '../constants/dimensions';
+import { CONNECTOR_RADIUS, DEFAULT_STROKE_WIDTH, LABEL_HEIGHT, VM_MARGIN_VERTICAL } from '../constants/dimensions';
 
 describe('vapp component', () => {
 
@@ -15,6 +15,7 @@ describe('vapp component', () => {
     (window as any).XMLHttpRequest = jest.fn().mockImplementation(xhrMockClass);
     const canvasEl = document.createElement('canvas');
     paper.setup(canvasEl);
+    paper.settings.applyMatrix = false;
   });
 
   function getExpectedVnicPoints(vmData: VmData[],
@@ -28,8 +29,9 @@ describe('vapp component', () => {
           expectedVnicPoints[vnic.network_name].y += LABEL_HEIGHT + VM_MARGIN_VERTICAL;
         } else {
           expectedVnicPoints[vnic.network_name] =
-            new paper.Point(networkPositions[vnic.network_name].x + position.x + 4.5, // 4.5 VAPP_NETWORK_PADDING_RIGHT
-              networkCount * (LABEL_HEIGHT + VM_MARGIN_VERTICAL) + LABEL_HEIGHT / 2 + VM_MARGIN_VERTICAL + position.y);
+            new paper.Point(
+              networkPositions[vnic.network_name].x + position.x + CONNECTOR_RADIUS - DEFAULT_STROKE_WIDTH,
+              networkCount * (LABEL_HEIGHT + VM_MARGIN_VERTICAL) + LABEL_HEIGHT / 2 + position.y);
           networkCount++;
         }
       });
@@ -37,7 +39,7 @@ describe('vapp component', () => {
     return expectedVnicPoints;
   }
 
-  test.only('basic properties and vnics on different networks', () => {
+  test('basic properties and vnics on different networks', () => {
     const vmsData: VmData[] = [
       {
         uuid: '',
@@ -93,10 +95,11 @@ describe('vapp component', () => {
       expect(vms.data[i].vnics).toBe(data.vnics);
     });
     expect(vms.lowestVnicPointByNetworkName).toEqual(getExpectedVnicPoints(vmsData, networkPositions, position));
+    expect(vms.position.x).toBe(position.x);
     expect(vms.position.y).toBe(position.y);
   });
 
-  test.only('multiple vnics on same network', () => {
+  test('multiple vnics on same network', () => {
     const vmsData: VmData[] = [
       {
         uuid: '',
@@ -142,13 +145,13 @@ describe('vapp component', () => {
       A: new paper.Point(0, 30)
     };
     const position = new paper.Point(20, 50);
-    const vms = new VmAndVnicListComponent(vmsData, networkPositions, position);
+    const vms = new VmAndVnicListComponent(vmsData, networkPositions, networkPositions['A'], position);
     expect(vms.lowestVnicPointByNetworkName).toEqual(getExpectedVnicPoints(vmsData, networkPositions, position));
     expect(vms.position.x).toBe(position.x);
     expect(vms.position.y).toBe(position.y);
   });
 
-  test.only('mix vnics on same network or different network', () => {
+  test('mix vnics on same network or different network', () => {
     const vmsData: VmData[] = [
       {
         uuid: '',
@@ -195,7 +198,7 @@ describe('vapp component', () => {
       B: new paper.Point(20, 30)
     };
     const position = new paper.Point(60, 10);
-    const vms = new VmAndVnicListComponent(vmsData, networkPositions, position);
+    const vms = new VmAndVnicListComponent(vmsData, networkPositions, networkPositions['B'], position);
     expect(vms.lowestVnicPointByNetworkName).toEqual(getExpectedVnicPoints(vmsData, networkPositions, position));
     expect(vms.position.x).toBe(position.x);
     expect(vms.position.y).toBe(position.y);

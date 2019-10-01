@@ -7,7 +7,7 @@ import { DEFAULT_SCROLLBAR_THICKNESS } from '../../../../../src/constants/dimens
 
 @Component({
   selector: 'misc-scrollbar-horizontal-demo',
-  template: `    
+  template: `
 	  <demo label="Horizontal Scrollbar" height="162"
           description="Scrollbar UI component for horizontal scrolling with the default scrollbar and scroll track."
           runnable="true" (run)="run()" (reset)="reset()"></demo>
@@ -23,10 +23,8 @@ export class MiscScrollbarHorizontalDemoComponent implements AfterViewInit {
     // sets up Paper Project
     const proj = this.demo.getProject();
     proj.activate();
-    proj.activeLayer.applyMatrix = false;
     this.demo.backgroundColor = CANVAS_BACKGROUND_COLOR;
     const view = paper.view;
-    const canvas = paper.view.element;
     const VIEW_PADDING = 30;
 
     // create content
@@ -56,21 +54,13 @@ export class MiscScrollbarHorizontalDemoComponent implements AfterViewInit {
     // create scrollbar
     const scrollbar = new ScrollbarComponent({
       content: content,
+      container: view.element,
       containerBounds: view.bounds,
       contentOffsetEnd: VIEW_PADDING
     },
       new paper.Point(VIEW_PADDING, view.size.height - DEFAULT_SCROLLBAR_THICKNESS - 10),
       view.bounds.width - VIEW_PADDING * 2
     );
-    if (scrollbar.isEnabled) {
-      canvas.onmouseenter = scrollbar.containerMouseEnter;
-      canvas.onmouseleave = scrollbar.containerMouseLeave;
-
-      // add scroll listening. paper doesn't have a wheel event handler
-      canvas.onwheel = (event: WheelEvent) => {
-        scrollbar.onScroll(event);
-      };
-    }
 
   }
 

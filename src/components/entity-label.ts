@@ -1,6 +1,7 @@
 import * as paper from 'paper';
 import { LABEL_HORIZONTAL_PADDING } from '../constants/dimensions';
 import { LabelComponent } from './label';
+import { TextOptions } from './label-text';
 
 const ICON_SIZE = 10;
 const ICON_MARGIN = 10;
@@ -19,14 +20,13 @@ export class EntityLabelComponent extends LabelComponent {
    * @param _text the text to be displayed on the label
    * @param iconColor the icon color specific to the entity type
    * @param _point the location that the entity label should be rendered at
-   * @param fontWeight the font weight of the label. Defaults to 'normal' in parent
+   * @param textOptions the paper.PointText options object to customize the text
    */
   constructor(protected _text: string,
-              private iconColor: paper.Color | string,
+              protected iconColor: paper.Color | string,
               protected _point: paper.Point = new paper.Point(0, 0),
-              private _fontWeight: string | number = '') {
-    super(_text, _point);
-    this.applyMatrix = false;
+              protected textOptions: TextOptions = {}) {
+    super(_text, _point, textOptions);
     this.pivot = new paper.Point(0, 0);
 
     this._icon = new paper.Path.Rectangle({
@@ -37,12 +37,6 @@ export class EntityLabelComponent extends LabelComponent {
       fillColor: this.iconColor,
       parent: this
     });
-
-    // change in font weight will change the background width and possibly trigger clipping that will be
-    // handled by the parent
-    if (this._fontWeight) {
-      super.setFontWeight('bold');
-    }
 
     // reposition and resize other elements to fit the icon
     this._label.position.x = this._icon.bounds.right + LABEL_HORIZONTAL_PADDING;

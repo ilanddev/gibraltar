@@ -1,9 +1,10 @@
 import * as paper from 'paper';
 import { VM_ICON_SIZE } from '../constants/dimensions';
+import { CANVAS_BACKGROUND_COLOR } from '../constants/colors';
 
 const SLIDEOVER_ANIMATIONS_PER_SECOND = .125;
 const SIZE = 30;
-const BACKGROUND_COLOR = '#191C28';
+const BACKGROUND_COLOR = CANVAS_BACKGROUND_COLOR;
 const SPINNER_COLOR = '#81A2B6';
 const SPINNER_ARC_WIDTH = 3;
 const SPINNER_ARC_MARGIN = 9;
@@ -28,7 +29,6 @@ export class IconLabelLoaderComponent extends paper.Group {
               symbolPromise: Promise<paper.Symbol>) {
     super();
     const self = this;
-    this.applyMatrix = false;
     this.position = _point;
     this._background = new paper.Path.Rectangle({
       rectangle: new paper.Rectangle(0, 0,

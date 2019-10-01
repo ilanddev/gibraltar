@@ -1,11 +1,9 @@
 import * as paper from 'paper';
 import { VmData, VmComponent } from './vm';
 import { VnicComponent } from './vnic';
-import { CONNECTOR_RADIUS, CONNECTOR_SIZE, CONNECTOR_RIGHT_PADDING, DEFAULT_STROKE_WIDTH, VAPP_NETWORK_RIGHT_MARGIN,
-  LABEL_HEIGHT, VM_MARGIN_VERTICAL } from '../constants/dimensions';
+import { CONNECTOR_RADIUS, CONNECTOR_SIZE, CONNECTOR_RIGHT_MARGIN, DEFAULT_STROKE_WIDTH, LABEL_HEIGHT,
+  VM_MARGIN_VERTICAL } from '../constants/dimensions';
 import { VappNetworkPositionsByName } from './vapp-network-list';
-
-const VAPP_NETWORK_PADDING_RIGHT = 4.5;
 
 /**
  * Interface for the lowest vnic point by network name.
@@ -21,48 +19,53 @@ export class VmAndVnicListComponent extends paper.Group {
 
   // store lowest vnic point by network name for setting the lowest point of the vapp network path
   private _lowestVnicPointByNetworkName: LowestVnicPointByNetworkName = {};
-  // x position of the last (furthest right) network in vapp network list used for positioning vms and vnics
-  readonly lastNetworkPositionX: number = 0;
 
   /**
    * Creates a new VmAndVnicListComponent instance.
    *
    * @param _vms the vms data
-   * @param vappNetworkPositionsByName the vapp network positions by name from the VappNetworkListComponent for
+   * @param vappNetworkPositionsByName the vapp network positions by name from the VappNetworkListComponent used for
    * positioning x value of matching vnics
+   * @param lastNetworkPosition the position of the last (furthest right) vapp network used for positioning vms and
+   * unattached vnics
    * @param _point the location that the vm and vnic list should be rendered at
    */
   constructor(private _vms: Array<VmData>,
               private vappNetworkPositionsByName: VappNetworkPositionsByName = {},
+              private lastNetworkPosition: paper.Point = new paper.Point(0, 0),
               private _point: paper.Point = new paper.Point(0, 0)) {
     super();
-    this.applyMatrix = false;
     this.pivot = new paper.Point(0, 0);
     this.position = _point;
 
-    // reusable calculations
-    const vappNetworkCount = Object.keys(this.vappNetworkPositionsByName).length;
-    this.lastNetworkPositionX = vappNetworkCount && (vappNetworkCount - 1) * VAPP_NETWORK_RIGHT_MARGIN
-      + CONNECTOR_RADIUS - DEFAULT_STROKE_WIDTH;
-    const vnicOffsetX = vappNetworkCount
-      ? CONNECTOR_SIZE + CONNECTOR_RIGHT_PADDING + DEFAULT_STROKE_WIDTH * 2
-      : VAPP_NETWORK_PADDING_RIGHT;
-    const vnicOffsetY = LABEL_HEIGHT / 2 + VM_MARGIN_VERTICAL;
-    const vmOffsetX = CONNECTOR_RADIUS + CONNECTOR_RIGHT_PADDING + DEFAULT_STROKE_WIDTH * 2;
+    // reusable values
+    const hasVappNetworks = Object.keys(this.vappNetworkPositionsByName).length !== 0;
+    // middle of vm label
+    const vnicOffsetY = LABEL_HEIGHT / 2;
+    // offset from vnic pivot in the center to the left stroke bounds
+    const vnicOffsetX = CONNECTOR_RADIUS - DEFAULT_STROKE_WIDTH;
 
     // draw vms and their vnics
     this._vms.forEach((vmData, index) => {
-      const pointY = (LABEL_HEIGHT + VM_MARGIN_VERTICAL) * index;
+      const sharedPointY = (LABEL_HEIGHT + VM_MARGIN_VERTICAL) * index;
+      let xPositionMultiplier = hasVappNetworks ? 1 : 0;
+
       vmData.vnics.forEach(vnicData => {
+        const matchingNetwork = this.vappNetworkPositionsByName[vnicData.network_name];
+        const vnicPointX = matchingNetwork ? matchingNetwork.x : this.getPointX(xPositionMultiplier);
         const vnic = new VnicComponent(
           vnicData,
-          new paper.Point(this.getVnicPointX(vnicData.network_name, vnicOffsetX), pointY + vnicOffsetY));
+          new paper.Point(vnicPointX + vnicOffsetX, sharedPointY + vnicOffsetY));
         this.addChild(vnic);
         this._lowestVnicPointByNetworkName[vnicData.network_name] = this.localToGlobal(vnic.position);
+        if (!matchingNetwork) {
+          xPositionMultiplier++;
+        }
       });
+
       const vm = new VmComponent(
         vmData,
-        new paper.Point(this.getVmPointX(vmOffsetX),pointY + VM_MARGIN_VERTICAL),
+        new paper.Point(this.getPointX(xPositionMultiplier), sharedPointY),
         true);
       this.addChild(vm);
     });
@@ -83,31 +86,12 @@ export class VmAndVnicListComponent extends paper.Group {
   }
 
   /**
-   * Calculates VNIC's x position based on if it's attached or unattached to a network and items drawn to the left
-   * of it.
-   * @param name the name of the vApp network that the VNIC is attached to
-   * @param offsetX the extra offset added to x position value
+   * Calculates x position for VMs and unattached VNICs.
+   * @param multiplier amount to stagger horizontal position by.
    */
-  private getVnicPointX(name: string, offsetX: number): number {
-    const pathPosition = this.vappNetworkPositionsByName && this.vappNetworkPositionsByName[name];
-    if (pathPosition) {
-      // position is based on matching vapp network path
-      return pathPosition.x + VAPP_NETWORK_PADDING_RIGHT;
-    } else {
-      // position is based on the item (vnic or vapp network path) that is located furthest to right
-      const lastChildPositionX = this.lastChild && this.lastChild.position.x;
-      return Math.max(lastChildPositionX, this.lastNetworkPositionX) + offsetX;
-    }
-  }
-
-  /**
-   * Calculate's VM's x position based on the item (vnic or vapp network path) drawn to the left of it.
-   * @param offsetX the extra offset added to x position value
-   */
-  private getVmPointX(offsetX: number): number {
-    const lastVnicAndOffsetX = (this.lastChild instanceof VnicComponent) ? this.lastChild.position.x + offsetX : 0;
-    const lastNetworkAndOffsetX = this.lastNetworkPositionX && this.lastNetworkPositionX + offsetX;
-    // position is based on the item (vnic or vapp network path) that is located furthest to the right
-    return Math.max(lastVnicAndOffsetX, lastNetworkAndOffsetX);
+  private getPointX(multiplier: number): number {
+    // multiply by the size of the vnic icon including margin and stroke
+    return multiplier * (CONNECTOR_SIZE + CONNECTOR_RIGHT_MARGIN + DEFAULT_STROKE_WIDTH * 2)
+      + this.lastNetworkPosition.x;
   }
 }

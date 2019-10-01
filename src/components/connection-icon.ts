@@ -4,27 +4,29 @@ import { CONNECTOR_RADIUS } from '../constants/dimensions';
 import { DEFAULT_STROKE_STYLE } from '../constants/styles';
 
 /**
- * Connector Visual Component.
+ * Connection Icon Visual Component.
+ * The large (11px) open circle icon with a grey stroke that represents connections. Used for VNICs that are
+ * attached and connected to a vApp Network or for the vApp Network to Org-Vdc network connections.
  */
-export class ConnectorComponent extends paper.Group {
+export class ConnectionIconComponent extends paper.Group {
 
-  // the stroked circle item
-  readonly _connector: paper.Path.Circle;
+  // the stroked and 'unfilled' circle icon
+  readonly _icon: paper.Path.Circle;
 
   /**
-   * Creates a new ConnectorComponent instance.
+   * Creates a new ConnectionIconComponent instance.
    *
-   * @param _point the location that the connector should be rendered at
+   * @param _point the location that the icon should be rendered at
    * @param _fillColor the inner fill color that usually matches the background color of the element it is on top of
+   * to make it seem 'unfilled'
    */
   constructor(private _point: paper.Point = new paper.Point(0, 0),
               private _fillColor: paper.Color | string = VAPP_BACKGROUND_COLOR) {
     super();
-    this.applyMatrix = false;
     this.position = _point;
     this.pivot = new paper.Point(0, 0);
 
-    this._connector = new paper.Path.Circle(
+    this._icon = new paper.Path.Circle(
       {
         position: new paper.Point(0, 0),
         radius: CONNECTOR_RADIUS,
@@ -34,7 +36,7 @@ export class ConnectorComponent extends paper.Group {
       });
   }
 
-  get connector(): paper.Path.Circle {
-    return this._connector;
+  get icon(): paper.Path.Circle {
+    return this._icon;
   }
 }

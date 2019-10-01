@@ -46,7 +46,6 @@ export class VmComponent extends paper.Group {
               visible: boolean = false) {
     super();
     const self = this;
-    this.applyMatrix = false;
     this.position = _point;
     this.pivot = new paper.Point(0, 0);
     self._label = new IconLabelComponent(self._vm.name,

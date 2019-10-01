@@ -1,7 +1,6 @@
 import * as paper from 'paper';
 import { VappNetworkData, VappNetworkComponent } from './vapp-network';
 import { LowestVnicPointByNetworkName } from './vm-and-vnic-list';
-import { DEFAULT_STROKE_STYLE } from '../constants/styles';
 import { VAPP_NETWORK_RIGHT_MARGIN } from '../constants/dimensions';
 
 /**
@@ -31,7 +30,6 @@ export class VappNetworkListComponent extends paper.Group {
   constructor(private _vappNetworks: VappNetworkData[],
               private _point: paper.Point = new paper.Point(0, 0)) {
     super();
-    this.applyMatrix = false;
     this.pivot = new paper.Point(0, 0);
     this.position = this._point;
 
@@ -55,6 +53,14 @@ export class VappNetworkListComponent extends paper.Group {
         this.isolatedNetworkCount++;
       }
     });
+  }
+
+  /**
+   * Gets the position of the last vApp network (furthest right).
+   */
+  get lastNetworkPosition(): paper.Point {
+    const listCount = this.networkPathList.length;
+    return listCount ? this.networkPathList[listCount - 1].position : new paper.Point(0, 0);
   }
 
   /**
@@ -95,9 +101,8 @@ export class VappNetworkListComponent extends paper.Group {
    * Clones the bottom segment of vapp networks to separate for scrolling and removes the original segment.
    * @param splitPositionY vertical point where the network path should be split for cloning and separation
    */
-  cloneVmListSegments(splitPositionY: number) {
+  cloneVmListSegments(splitPositionY: number): paper.Group {
     const clones = new paper.Group();
-    clones.applyMatrix = false;
     clones.pivot = new paper.Point(0, 0);
     clones.position = this._point;
     this.networkPathList.forEach(network => {

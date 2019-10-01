@@ -6,14 +6,13 @@ describe('scrollbar component', () => {
   beforeAll(() => {
     const canvasEl = document.createElement('canvas');
     paper.setup(canvasEl);
+    paper.settings.applyMatrix = false;
   });
 
   test('basic properties and defaults', () => {
     const scrollable = {
-      content: new paper.Path.Rectangle(
-        new paper.Point(10, 0),
-        new paper.Size(1000, 500)
-      ),
+      content: new paper.Path.Rectangle(new paper.Rectangle(10, 0, 1000, 500)),
+      container: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
       containerBounds: new paper.Rectangle(0, 0, 500, 500)
     };
     const defaultPosition = new paper.Point(0, 0);
@@ -31,10 +30,8 @@ describe('scrollbar component', () => {
 
   test('basic properties and custom position', () => {
     const scrollable = {
-      content: new paper.Path.Rectangle(
-        new paper.Point(10, 0),
-        new paper.Size(1000, 500)
-      ),
+      content: new paper.Path.Rectangle(new paper.Rectangle(10, 0, 1000, 500)),
+      container: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
       containerBounds: new paper.Rectangle(0, 0, 500, 500)
     };
     const customPosition = new paper.Point(30, 30);
@@ -53,10 +50,8 @@ describe('scrollbar component', () => {
 
   test('basic properties and custom scrollTrackLength', () => {
     const scrollable = {
-      content: new paper.Path.Rectangle(
-        new paper.Point(10, 0),
-        new paper.Size(1000, 500)
-      ),
+      content: new paper.Path.Rectangle(new paper.Rectangle(10, 0, 1000, 500)),
+      container: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
       containerBounds: new paper.Rectangle(0, 0, 500, 500)
     };
     const defaultPosition = new paper.Point(0, 0);
@@ -75,10 +70,8 @@ describe('scrollbar component', () => {
 
   test('does not build when content fits inside container' , () => {
     const scrollable = {
-      content: new paper.Path.Rectangle(
-        new paper.Point(0, 0),
-        new paper.Size(500, 500)
-      ),
+      content: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
+      container: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
       containerBounds: new paper.Rectangle(0, 0, 500, 500)
     };
     const scrollbar = new ScrollbarComponent(scrollable, new paper.Point(0, 0));
@@ -87,10 +80,8 @@ describe('scrollbar component', () => {
 
   test('builds when content does not fit inside container' , () => {
     const scrollable = {
-      content: new paper.Path.Rectangle(
-        new paper.Point(0, 0),
-        new paper.Size(501, 500)
-      ),
+      content: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 501, 500)),
+      container: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
       containerBounds: new paper.Rectangle(0, 0, 500, 500)
     };
     const scrollbar = new ScrollbarComponent(scrollable, new paper.Point(0, 0));
@@ -99,10 +90,8 @@ describe('scrollbar component', () => {
 
   test('does not build when content including offsets do not fit but checkFitWithOffsets is off' , () => {
     const scrollable = {
-      content: new paper.Path.Rectangle(
-        new paper.Point(0, 0),
-        new paper.Size(500, 500)
-      ),
+      content: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
+      container: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
       containerBounds: new paper.Rectangle(0, 0, 500, 500),
       contentOffsetStart: 10,
       contentOffsetEnd: 10,
@@ -114,10 +103,8 @@ describe('scrollbar component', () => {
 
   test('builds when content including offsets do not fit and checkFitWithOffsets is on' , () => {
     const scrollable = {
-      content: new paper.Path.Rectangle(
-        new paper.Point(0, 0),
-        new paper.Size(500, 500)
-      ),
+      content: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
+      container: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
       containerBounds: new paper.Rectangle(0, 0, 500, 500),
       contentOffsetStart: 10,
       contentOffsetEnd: 10,
@@ -129,10 +116,8 @@ describe('scrollbar component', () => {
 
   test('getScrollbar returns child scrollbar when component is enabled' , () => {
     const scrollable = {
-      content: new paper.Path.Rectangle(
-        new paper.Point(0, 0),
-        new paper.Size(1000, 500)
-      ),
+      content: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 1000, 500)),
+      container: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
       containerBounds: new paper.Rectangle(0, 0, 500, 500)
     };
     const scrollbar = new ScrollbarComponent(scrollable, new paper.Point(0, 0));
@@ -143,10 +128,8 @@ describe('scrollbar component', () => {
 
   test('getScrollbar returns scrollbar that\'s not a child when component is disabled' , () => {
     const scrollable = {
-      content: new paper.Path.Rectangle(
-        new paper.Point(0, 0),
-        new paper.Size(500, 500)
-      ),
+      content: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
+      container: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
       containerBounds: new paper.Rectangle(0, 0, 500, 500)
     };
     const scrollbar = new ScrollbarComponent(scrollable, new paper.Point(0, 0));
@@ -157,10 +140,8 @@ describe('scrollbar component', () => {
 
   test('getScrollbar allows changes to scrollbar attributes' , () => {
     const scrollable = {
-      content: new paper.Path.Rectangle(
-        new paper.Point(0, 0),
-        new paper.Size(500, 500)
-      ),
+      content: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
+      container: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
       containerBounds: new paper.Rectangle(0, 0, 500, 500)
     };
     const scrollbar = new ScrollbarComponent(scrollable, new paper.Point(0, 0));
@@ -177,10 +158,8 @@ describe('scrollbar component', () => {
 
   test('setScrollbar allows fuller changes to scrollbar' , () => {
     const scrollable = {
-      content: new paper.Path.Rectangle(
-        new paper.Point(0, 0),
-        new paper.Size(500, 500)
-      ),
+      content: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
+      container: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
       containerBounds: new paper.Rectangle(0, 0, 500, 500)
     };
     const scrollbar = new ScrollbarComponent(scrollable, new paper.Point(0, 0));
@@ -203,10 +182,8 @@ describe('scrollbar component', () => {
 
   test('getTrack returns child track when component is enabled' , () => {
     const scrollable = {
-      content: new paper.Path.Rectangle(
-        new paper.Point(0, 0),
-        new paper.Size(501, 500)
-      ),
+      content: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 501, 500)),
+      container: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
       containerBounds: new paper.Rectangle(0, 0, 500, 500)
     };
     const scrollbar = new ScrollbarComponent(scrollable, new paper.Point(0, 0));
@@ -217,10 +194,8 @@ describe('scrollbar component', () => {
 
   test('getTrack returns track that\'s not a child when component is disabled' , () => {
     const scrollable = {
-      content: new paper.Path.Rectangle(
-        new paper.Point(0, 0),
-        new paper.Size(500, 500)
-      ),
+      content: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
+      container: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
       containerBounds: new paper.Rectangle(0, 0, 500, 500)
     };
     const scrollbar = new ScrollbarComponent(scrollable, new paper.Point(0, 0));
@@ -231,10 +206,8 @@ describe('scrollbar component', () => {
 
   test('getTrack allows changes to track attributes' , () => {
     const scrollable = {
-      content: new paper.Path.Rectangle(
-        new paper.Point(0, 0),
-        new paper.Size(500, 500)
-      ),
+      content: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
+      container: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
       containerBounds: new paper.Rectangle(0, 0, 500, 500)
     };
     const scrollbar = new ScrollbarComponent(scrollable, new paper.Point(0, 0));
@@ -251,10 +224,8 @@ describe('scrollbar component', () => {
 
   test('setTrack allows fuller changes to track' , () => {
     const scrollable = {
-      content: new paper.Path.Rectangle(
-        new paper.Point(0, 0),
-        new paper.Size(500, 500)
-      ),
+      content: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
+      container: new paper.Path.Rectangle(new paper.Rectangle(0, 0, 500, 500)),
       containerBounds: new paper.Rectangle(0, 0, 500, 500)
     };
     const scrollbar = new ScrollbarComponent(scrollable, new paper.Point(0, 0));

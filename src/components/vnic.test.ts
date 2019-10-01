@@ -6,6 +6,7 @@ describe('vnic component', () => {
   beforeAll(() => {
     const canvasEl = document.createElement('canvas');
     paper.setup(canvasEl);
+    paper.settings.applyMatrix = false;
   });
 
   test('basic properties', () => {

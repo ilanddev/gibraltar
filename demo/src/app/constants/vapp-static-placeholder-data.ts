@@ -1,4 +1,5 @@
 import { VappData } from '../../../../src/components/vapp';
+import { OperatingSystem } from 'iland-sdk';
 
 /**
  * Placeholder vApp data for the Vapp Static Demo
@@ -23,6 +24,7 @@ import { VappData } from '../../../../src/components/vapp';
   // 16. variations for unattached vnics
   // 17. nat-routed vApp network with no attached vms and vnics
   // 18. vapp with no vapp networks or vms
+  // 19. network-less vm in a list that has other vapp networks
 export const placeholderArrayOfVappData: Array<VappData> = [
   // 0. nat-routed vapp network
   {
@@ -279,13 +281,13 @@ export const placeholderArrayOfVappData: Array<VappData> = [
         vnics: [
           {
             vnic_id: 0,
-            network_name: 'A',
-            is_connected: true
+            network_name: '',
+            is_connected: false
           },
           {
             vnic_id: 1,
-            network_name: '',
-            is_connected: false
+            network_name: 'A',
+            is_connected: true
           },
           {
             vnic_id: 2,
@@ -2060,5 +2062,84 @@ export const placeholderArrayOfVappData: Array<VappData> = [
     name: 'Coke RES & BURST',
     vapp_networks: [],
     vms: []
+  },
+  // 19. network-less vm in a list that has other vapp networks
+  {
+    uuid: '',
+    name: 'BC Test vApp',
+    vapp_networks: [
+      {
+        uuid: '0',
+        name: 'A',
+        vapp_uuid: '',
+        fence_mode: 'BRIDGED'
+      },
+      {
+        uuid: '1',
+        name: 'B',
+        vapp_uuid: '',
+        fence_mode: 'BRIDGED'
+      },
+      {
+        uuid: '2',
+        name: 'C',
+        vapp_uuid: '',
+        fence_mode: 'BRIDGED'
+      }
+    ],
+    vms: [
+      {
+        uuid: '',
+        name: 'redhat-as-01',
+        vapp_uuid: '',
+        operatingSystem: 'redhatGuest',
+        vnics: [
+          {
+            vnic_id: 0,
+            network_name: 'A',
+            is_connected: true
+          }
+        ]
+      },
+      {
+        uuid: '',
+        name: 'debian-as-02',
+        vapp_uuid: '',
+        operatingSystem: 'debian8Guest',
+        vnics: [
+          {
+            vnic_id: 0,
+            network_name: 'B',
+            is_connected: true
+          }
+        ]
+      },
+      {
+        uuid: '',
+        name: 'linux-as-03',
+        vapp_uuid: '',
+        operatingSystem: 'other24xLinux64Guest',
+        vnics: [
+          {
+            vnic_id: 1,
+            network_name: 'C',
+            is_connected: true
+          }
+        ]
+      },
+      {
+        uuid: '',
+        name: 'arch-as-04',
+        vapp_uuid: '',
+        operatingSystem: 'btwIUseArch' as OperatingSystem,
+        vnics: [
+          {
+            vnic_id: 0,
+            network_name: '',
+            is_connected: false
+          }
+        ]
+      }
+    ]
   }
 ];

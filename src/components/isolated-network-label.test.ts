@@ -1,4 +1,5 @@
 import { IsolatedNetworkLabelComponent } from './isolated-network-label';
+import { DEFAULT_MAX_LABEL_WIDTH } from '../constants/dimensions';
 import * as paper from 'paper';
 
 describe('isolated network label component', () => {
@@ -6,6 +7,7 @@ describe('isolated network label component', () => {
   beforeAll(() => {
     const canvasEl = document.createElement('canvas');
     paper.setup(canvasEl);
+    paper.settings.applyMatrix = false;
   });
 
   test('basic properties', () => {
@@ -14,7 +16,7 @@ describe('isolated network label component', () => {
     const label = new IsolatedNetworkLabelComponent(text, position);
     expect(label.position.x).toBe(position.x);
     expect(label.position.y).toBe(position.y);
-    expect(label.label.content).toBe(text.toUpperCase());
+    expect(label.label.text.content).toBe(text.toUpperCase());
   });
 
   test('maxWidth', () => {
@@ -23,7 +25,7 @@ describe('isolated network label component', () => {
     const label = new IsolatedNetworkLabelComponent(text, position);
     expect(label.position.x).toBe(position.x);
     expect(label.position.y).toBe(position.y);
-    expect(label.label.bounds.width).toBeLessThan(200);
+    expect(label.label.bounds.width).toBeLessThan(DEFAULT_MAX_LABEL_WIDTH);
   });
 
 });

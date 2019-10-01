@@ -7,6 +7,7 @@ describe('vapp component', () => {
   beforeAll(() => {
     const canvasEl = document.createElement('canvas');
     paper.setup(canvasEl);
+    paper.settings.applyMatrix = false;
   });
 
   test('basic properties', () => {
@@ -83,7 +84,7 @@ describe('vapp component', () => {
     };
     const network = new VappNetworkComponent(vappNetworkData);
     network.setDisconnected();
-    expect(network.children.length).toBe(2); // path and small connector component
+    expect(network.children.length).toBe(2); // path and bullet point connection icon component
     expect(network.path.bounds.bottom).toBe(VAPP_PADDING + LABEL_HEIGHT / 2);
   });
 

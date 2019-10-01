@@ -1,6 +1,5 @@
 import * as paper from 'paper';
 import { EntityLabelComponent } from './entity-label';
-// import { VappNetworkData } from './vapp-network';
 import { VAPP_BACKGROUND_COLOR, LIGHT_GREY } from '../constants/colors';
 import { CONNECTOR_RADIUS, DEFAULT_STROKE_WIDTH, LABEL_HEIGHT, CONNECTOR_MARGIN } from '../constants/dimensions';
 import { DEFAULT_STROKE_STYLE } from '../constants/styles';
@@ -17,18 +16,17 @@ export class VappEdgeLabelComponent extends paper.Group {
   /**
    * Creates a new VappEdgeLabelComponent instance.
    *
-   * @param vappEdge the vappEdge data
-   * @param _point the location that the component will be rendered at.
+   * @param _text the name of the vApp edge's parent network
+   * @param _point the location that the component will be rendered at
    */
   constructor(private _text: string,
               private _point: paper.Point = new paper.Point(0, 0)) {
     super();
-    this.applyMatrix = false;
     this.pivot = new paper.Point(0, 0);
     this.position = _point;
 
     this._label = new EntityLabelComponent(this._text, ICON_COLOR);
-    this._label.getBackgroundComponent().style = {
+    this._label.background.style = {
       ...DEFAULT_STROKE_STYLE,
       fillColor: VAPP_BACKGROUND_COLOR
     };

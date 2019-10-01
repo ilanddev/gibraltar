@@ -13,8 +13,8 @@ import { ScrollbarComponent } from './scrollbar';
 const MARGIN_RIGHT = 30;
 const BACKGROUND_RADIUS = 5;
 const LABEL_ICON_COLOR = '#CA67B8';
-const VAPP_LABEL_BOTTOM_MARGIN = 10;
-const EDGE_LABEL_BOTTOM_MARGIN = 5;
+const VAPP_LABEL_BOTTOM_MARGIN = 20;
+const EDGE_LABEL_BOTTOM_MARGIN = 15;
 
 /**
  * Interface for vApp data.
@@ -31,13 +31,13 @@ export interface VappData {
  */
 export class VappComponent extends paper.Group {
 
-  readonly label: EntityLabelComponent;
-  readonly background: paper.Path.Rectangle;
-  readonly _margin: MarginComponent;
-  readonly vms: VmAndVnicListComponent;
-  readonly vappNetworks: VappNetworkListComponent;
+  private label: EntityLabelComponent;
+  private background: paper.Path.Rectangle;
+  private _margin: MarginComponent;
+  private vms: VmAndVnicListComponent;
+  private vappNetworks: VappNetworkListComponent;
   // position for the division between any labels and vm/vnic list
-  readonly divisionPositionY: number;
+  private divisionPositionY: number;
   private scrollbar: ScrollbarComponent;
   // content needs scrollbar
   private _isScrollable: boolean = false;
@@ -51,7 +51,6 @@ export class VappComponent extends paper.Group {
   constructor(private _vapp: VappData,
               private _point: paper.Point = new paper.Point(0, 0)) {
     super();
-    this.applyMatrix = false;
     this.pivot = new paper.Point(0, 0);
     this.position = _point;
 
@@ -69,7 +68,7 @@ export class VappComponent extends paper.Group {
       this._vapp.name,
       LABEL_ICON_COLOR,
       new paper.Point(labelPositionX, VAPP_PADDING),
-      'bold'
+      { fontWeight: 'bold' }
     );
     this.addChild(this.label);
 
@@ -98,6 +97,7 @@ export class VappComponent extends paper.Group {
     this.vms = new VmAndVnicListComponent(
       this._vapp.vms,
       this.vappNetworks && this.vappNetworks.networkPositionsByName,
+      this.vappNetworks && this.vappNetworks.lastNetworkPosition,
       new paper.Point(VAPP_PADDING + DEFAULT_STROKE_WIDTH, this.divisionPositionY));
     this.addChild(this.vms);
 
@@ -133,8 +133,6 @@ export class VappComponent extends paper.Group {
     // set up scrolling if necessary
     if (this._isScrollable) {
       this.clipAndScrollVmList();
-      this.onMouseEnter = this.scrollMouseEnter;
-      this.onMouseLeave = this.scrollMouseLeave;
     }
 
     // margin - used by other vapps for static or dynamic positioning
@@ -157,49 +155,9 @@ export class VappComponent extends paper.Group {
   }
 
   /**
-   * Gets the isScrollable state when the vApp needs a scrollbar.
-   */
-  get isScrollable(): boolean {
-    return this._isScrollable;
-  }
-
-  /**
-   * Sets scroll listening if there's a scrollbar.
-   * @param event WheelEvent passed from the native HTML canvas.
-   */
-  // TODO: add scroll listener with a better method. it's in parent demo component for now. could create a native canvas
-  //  event observable service similar to the paper.event service?
-  setScrollListening(event: WheelEvent) {
-    if (this.scrollbar) {
-      this.scrollbar.onScroll(event);
-    }
-  }
-
-  /**
-   * Handler for the mouse enter event when there is a scrollbar.
-   */
-  private scrollMouseEnter = (): void => {
-    this.scrollbar.containerMouseEnter();
-  }
-
-  /**
-   * Handler for the mouse leave event when there is a scrollbar.
-   */
-  private scrollMouseLeave = (): void => {
-    if (!ScrollbarComponent.anyIsDragging) {
-      this.scrollbar.containerMouseLeave();
-      // TODO: less kludgey way of activating the global default paper tool. it's the last one created in the demo. more
-      //  tools can be added or created in the future, so this index won't always be correct. can create a tool
-      //  service and/or tool stack which creates and destroys paper.tools when items are in or out of the view
-      // activates the global default tool (view horizontal scrolling in the parent demo component)
-      paper.tools[paper.tools.length - 1].activate();
-    }
-  }
-
-  /**
    * Clips and adds scrolling to the VmAndVnicList component when it's too large for the view.
    */
-  private clipAndScrollVmList() {
+  private clipAndScrollVmList(): void {
     // create drop shadow at the top of the vm list that fades in or out onScroll
     const dropShadow = new paper.Path.Rectangle({
       point: new paper.Point(0, 0),
@@ -207,8 +165,8 @@ export class VappComponent extends paper.Group {
       opacity: 0,
       style: {
         fillColor: VAPP_BACKGROUND_COLOR,
-        shadowColor: new paper.Color(0, 0, 0, 0.41),
-        shadowBlur: 10,
+        shadowColor: new paper.Color(0, 0, 0, 0.25),
+        shadowBlur: 5,
         shadowOffset: new paper.Point(0, 2)
       }
     });
@@ -223,14 +181,22 @@ export class VappComponent extends paper.Group {
 
     // items that will be scrollable
     const scrollableContent = new paper.Group({
-      applyMatrix: false,
       children: [vappNetworkClone, this.vms]
+    });
+
+    // apply clip mask
+    // tslint:disable-next-line
+    new paper.Group({
+      children: [vmListClipMask, scrollableContent, dropShadow],
+      clipped: true,
+      parent: this
     });
 
     // scrollbar set up
     const scrollbarPadding = 5;
     this.scrollbar = new ScrollbarComponent({
       content: scrollableContent,
+      container: this,
       containerBounds: vmListClipMask.bounds,
       contentOffsetEnd: VAPP_PADDING / 2
     },
@@ -239,6 +205,7 @@ export class VappComponent extends paper.Group {
       vmListClipMask.bounds.height - VAPP_PADDING,
       'vertical'
     );
+    this.addChild(this.scrollbar);
     // drop shadow fades in or out onScroll
     this.scrollbar.setCustomEffects({
       setActive: function() {
@@ -249,15 +216,6 @@ export class VappComponent extends paper.Group {
           opacity: 0
         }, 150);
       }
-    });
-
-    // apply clip mask
-    // tslint:disable-next-line
-    new paper.Group({
-      applyMatrix: false,
-      children: [vmListClipMask, scrollableContent, this.scrollbar, dropShadow],
-      clipped: true,
-      parent: this
     });
   }
 }

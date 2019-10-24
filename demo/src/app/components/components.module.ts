@@ -9,6 +9,8 @@ import { DemoComponent } from './demo-component/demo.component';
 import { VmPageComponent } from './vm-page-component/vm-page.component';
 import { VmCreateDemoComponent } from './vm-create-demo-component/vm-create-demo.component';
 import { VmDeleteDemoComponent } from './vm-delete-demo-component/vm-delete-demo.component';
+import { VappPageComponent } from './vapp-page-component/vapp-page.component';
+import { VappStaticDemoComponent } from './vapp-static-demo-component/vapp-static-demo.component';
 import { MiscPageComponent } from './misc-page-component/misc-page.component';
 import { MiscScrollbarHorizontalDemoComponent } from
     './misc-scrollbar-demo-component/misc-scrollbar-horizontal-demo.component';
@@ -23,6 +25,8 @@ import { MiscScrollbarVerticalDemoComponent } from
     VmBasicDemoComponent,
     ComponentsPageComponent,
     DemoComponent,
+    VappPageComponent,
+    VappStaticDemoComponent,
     MiscPageComponent,
     MiscScrollbarHorizontalDemoComponent,
     MiscScrollbarVerticalDemoComponent

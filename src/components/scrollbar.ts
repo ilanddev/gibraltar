@@ -10,6 +10,9 @@ const ACTIVE_SCROLLBAR_OPACITY = 1;
 const HIT_TEST_TOLERANCE = 11;
 const DEFAULT_SCROLLABLE_OFFSET = 0;
 
+/**
+ * Enumeration of scrollbar directions.
+ */
 type ScrollbarDirection = 'horizontal' | 'vertical';
 
 /**
@@ -21,8 +24,12 @@ interface Scrollable {
    */
   content: paper.Group | paper.Item;
   /**
-   * @property containerBounds Bounds of the container that displays the viewable content. Could be something like
-   * the view or a clip mask.
+   * @property container The container that displays the viewable content. Could be something like the view or a
+   * clip mask. Used for hover event listening. HTMLCanvasElement used to solve issues with multiple paper views.
+   */
+  container: paper.Group | paper.Item | paper.View | HTMLCanvasElement;
+  /**
+   * @property containerBounds Bounds of the container that displays the viewable content. Used for measurements.
    */
   containerBounds: paper.Rectangle;
   /**
@@ -55,6 +62,14 @@ class CustomEffects {
  * Scrollbar Visual Component.
  */
 export class ScrollbarComponent extends paper.Group {
+
+  // checks if any scrollbars are currently receiving mouse drag input to override other default events
+  static anyIsDragging: boolean = false;
+  // the default scrollbar that can still receive input events while a scrollbar of another direction is active. For
+  // example, the main view's horizontal scrollbar can scroll from horizontal input events even if a vapp vertical
+  // scrollbar is active.
+  static _defaultScrollbar: ScrollbarComponent | undefined;
+  static defaultScrollbarDirection: ScrollbarDirection | undefined;
   protected scrollbar: paper.Path;
   protected track: paper.Path;
   protected scrollAmount: number;
@@ -67,15 +82,18 @@ export class ScrollbarComponent extends paper.Group {
   private dimension: (keyof paper.Rectangle);
   // content's original position. used to constrain content position while scrolling
   private contentInitialPosition: number;
-  // scrollbar is rendered and enabled when it's needed
-  private isEnabled: boolean = true;
+  // scrollbar is visible and interactive when container is hovered
+  private enabled: boolean = true;
   private containerSize: number;
+  // make a bigger area to make the track easier to interact with
   private extendedTrackArea: paper.Path.Rectangle;
+  // make a bigger area to make the scrollbar easier to interact with
   private extendedScrollbarArea: paper.Path.Rectangle;
   private arrowKeyDown: paper.Tool;
   private scrollbarDrag: paper.Tool;
   private dragging: boolean = false;
-  private hovering: boolean = false;
+  private scrollbarHovering: boolean = false;
+  private containerHovering: boolean = false;
   private activeScrollTimeout: ReturnType<typeof setTimeout>;
 
   /**
@@ -91,6 +109,7 @@ export class ScrollbarComponent extends paper.Group {
    * // Create a horizontal scrollbar with mostly default configuration.
    * const scrollable = {
    *   content: (your content),
+   *   container: (content's container),
    *   containerBounds: (content's container.bounds)
    * }
    * const scrollbar = new ScrollbarComponent(scrollable, new paper.Point(30, 30));
@@ -100,6 +119,7 @@ export class ScrollbarComponent extends paper.Group {
    * const containerPadding = 20;
    * const scrollable = {
    *   content: (your content),
+   *   container: (content's container),
    *   containerBounds: (content's container.bounds),
    *   contentOffsetEnd: containerPadding
    * };
@@ -115,7 +135,6 @@ export class ScrollbarComponent extends paper.Group {
               readonly scrollTrackLength: number = 0,
               private direction: ScrollbarDirection = 'horizontal') {
     super();
-    this.applyMatrix = false;
     this.position = this._point as paper.Point;
     this.pivot = new paper.Point(0, 0);
 
@@ -132,11 +151,10 @@ export class ScrollbarComponent extends paper.Group {
 
     this.track = this.createTrack(this.scrollTrackLength, DEFAULT_SCROLLBAR_THICKNESS);
     this.scrollbar = this.createScrollbar(this.getProportionalLength(), DEFAULT_SCROLLBAR_THICKNESS);
-    // extend track and scrollbar hit areas based on hit tolerance to make interaction easier. used for
-    // onClick event and hover tests
+    // extend track and scrollbar hit areas based on hit tolerance to make interaction easier. used for onClick
+    // event and hover tests
     this.extendedTrackArea = this.extendHitArea(this.track);
     this.extendedScrollbarArea = this.extendHitArea(this.scrollbar);
-
     // check if scrollbar is necessary
     if (this.scrollableContentFitsContainer()) {
       this.disable();
@@ -151,41 +169,87 @@ export class ScrollbarComponent extends paper.Group {
     this.onClick = this.trackClick;
     this.scrollbarDrag = this.scrollbarDragTool();
     this.arrowKeyDown = this.arrowKeyDownTool();
+
+    // not visible until container is hovered and no other scrollbars are currently in dragging state
+    this.visible = false;
+    // handles hover events for html canvas and paper items
+    if (this.scrollable.container instanceof HTMLCanvasElement) {
+      this.scrollable.container.onmouseenter = () => this.containerMouseEnter();
+      this.scrollable.container.onmouseleave = () => this.containerMouseLeave();
+    } else {
+      this.scrollable.container.onMouseEnter = this.containerMouseEnter;
+      this.scrollable.container.onMouseLeave = this.containerMouseLeave;
+    }
+  }
+
+  /**
+   * Sets the default scrollbar.
+   * @param value The scrollbar that will be set as default.
+   */
+  static set defaultScrollbar(value: ScrollbarComponent) {
+    this._defaultScrollbar = value;
+    this.defaultScrollbarDirection = this._defaultScrollbar.isHorizontal ? 'horizontal' : 'vertical';
+  }
+
+  /**
+   * Handler for container mouse enter event.
+   */
+  containerMouseEnter = (): void => {
+    this.containerHovering = true;
+    if (!ScrollbarComponent.anyIsDragging) {
+      this.enabled = true;
+      this.visible = true;
+      this.activateDefaultTool();
+      // handle scroll listening from the HTML canvas element. paper doesn't have a scroll event handler
+      this.project.view.element.onwheel = (event: WheelEvent) => {
+        this.onScroll(event);
+      };
+    }
+  }
+
+  /**
+   * Handler for container mouse leave event.
+   */
+  containerMouseLeave = (): void => {
+    this.containerHovering = false;
+    if (!ScrollbarComponent.anyIsDragging) {
+      this.enabled = false;
+      this.visible = false;
+      if (ScrollbarComponent._defaultScrollbar) {
+        this.resetDefaultTool();
+        // reset default scroll listening from the HTML canvas element. paper doesn't have a scroll event handler
+        this.project.view.element.onwheel = (event: WheelEvent) => {
+          ScrollbarComponent._defaultScrollbar!.onScroll(event);
+        };
+      }
+    }
   }
 
   /**
    * Activate the default tool. Used when the scrollable container is hovered or active.
    */
   activateDefaultTool(): void {
-    if (this.isEnabled) {
+    if (this.enabled) {
       this.arrowKeyDown.activate();
     }
   }
 
   /**
    * Handler for the wheel event.
-   * PaperJS does not have a scroll event handler, so this is set up externally where the HTML canvas element can be
-   * accessed.
-   * @param event WheelEvent passed from the HTML canvas.
-   *
-   * @example
-   * const scrollbar = new ScrollbarComponent(...);
-   * const canvas = this.demo.canvas.nativeElement;
-   * canvas.onwheel = (event: WheelEvent) => {
-   *   scrollbar.onScroll(event);
-   * };
+   * @param event PaperJS does not have a scroll event handler, so this is the WheelEvent passed from the HTML canvas.
    */
   onScroll(event: WheelEvent): void {
-    if (this.isEnabled) {
-      const validScrollDirection = this.isHorizontal ? event.deltaX !== 0 : event.deltaY !== 0;
-      if (!validScrollDirection) {
-        return;
+    if (this.enabled) {
+      const scrollDirection = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? 'horizontal' : 'vertical';
+      if (scrollDirection === this.direction) {
+        event.preventDefault();
+        this.setActiveContinuously();
+        this.isHorizontal
+          ? this.changeScrollAndContentPosition(this.scrollbar.position.x + event.deltaX)
+          : this.changeScrollAndContentPosition(this.scrollbar.position.y + event.deltaY);
+      } else if (scrollDirection === ScrollbarComponent.defaultScrollbarDirection) {
+        ScrollbarComponent._defaultScrollbar!.onScroll(event);
       }
-      event.preventDefault();
-      this.setActiveContinuously();
-      this.isHorizontal
-        ? this.changeScrollAndContentPosition(this.scrollbar.position.x + event.deltaX)
-        : this.changeScrollAndContentPosition(this.scrollbar.position.y + event.deltaY);
     }
   }
 
@@ -287,30 +351,41 @@ export class ScrollbarComponent extends paper.Group {
   }
 
   /**
-   * Enable scrollbar visibility and interactivity.
+   * Reset current paper tool to the default scrollbar's default paper tool when another scrollbar is no longer
+   * active and hovered.
    */
-  private enable(): void {
-    this.isEnabled = true;
-    this.addChildren([this.track, this.scrollbar, this.extendedTrackArea]);
+  private resetDefaultTool() {
+    if (ScrollbarComponent._defaultScrollbar) {
+      ScrollbarComponent._defaultScrollbar!.activateDefaultTool();
+    }
   }
 
   /**
-   * Disable scrollbar visibility and interactivity.
+   * Enable scrollbar component elements and interactivity.
+   */
+  private enable(): void {
+    this.enabled = true;
+    this.addChildren([this.track, this.extendedScrollbarArea, this.extendedTrackArea]);
+  }
+
+  /**
+   * Disable scrollbar component elements and interactivity.
    */
   private disable(): void {
-    this.isEnabled = false;
+    this.enabled = false;
     this.removeChildren();
   }
 
   /**
-   * Assign scrollable defaults for the optional properties.
+   * Assign scrollable defaults for the optional properties, so that none will be undefined.
    */
   private assignScrollableDefaults(): Scrollable {
-    return Object.assign({
+    return {
       contentOffsetStart: DEFAULT_SCROLLABLE_OFFSET,
       contentOffsetEnd: DEFAULT_SCROLLABLE_OFFSET,
-      checkFitWithOffsets: true
-    }, this.scrollable);
+      checkFitWithOffsets: true,
+      ...this.scrollable
+    };
   }
 
   /**
@@ -324,10 +399,10 @@ export class ScrollbarComponent extends paper.Group {
     const contentWithOffset = new paper.Path.Rectangle({ rectangle: content.bounds });
     if (this.isHorizontal) {
       contentWithOffset.bounds.width = this.contentSizeWithOffsets();
-      contentWithOffset.position.x -= (contentOffsetStart || DEFAULT_SCROLLABLE_OFFSET);
+      contentWithOffset.position.x -= contentOffsetStart!;
     } else {
       contentWithOffset.bounds.height = this.contentSizeWithOffsets();
-      contentWithOffset.position.y -= (contentOffsetStart || DEFAULT_SCROLLABLE_OFFSET);
+      contentWithOffset.position.y -= contentOffsetStart!;
     }
     return contentWithOffset.isInside(containerBounds);
   }
@@ -337,8 +412,7 @@ export class ScrollbarComponent extends paper.Group {
    */
   private contentSizeWithOffsets(): number {
     const { content, contentOffsetStart, contentOffsetEnd } = this.scrollable;
-    return (this.isHorizontal ? content.bounds.width : content.bounds.height)
-    + (contentOffsetStart || DEFAULT_SCROLLABLE_OFFSET) + (contentOffsetEnd || DEFAULT_SCROLLABLE_OFFSET);
+    return (this.isHorizontal ? content.bounds.width : content.bounds.height) + contentOffsetStart! + contentOffsetEnd!;
   }
 
   /**
@@ -385,7 +459,9 @@ export class ScrollbarComponent extends paper.Group {
    * The proportionate length for the scrollbar. Based on viewable content size divided by the full content size.
    */
   private getProportionalLength(): number {
-    return (this.containerSize / this.contentSizeWithOffsets()) * this.scrollTrackLength;
+    const fullSize = this.contentSizeWithOffsets() + this.scrollable.contentOffsetEnd!
+      - this.scrollable.contentOffsetStart!;
+    return this.containerSize / fullSize * this.scrollTrackLength;
   }
 
   /**
@@ -418,7 +494,7 @@ export class ScrollbarComponent extends paper.Group {
    * @param event {paper.MouseEvent}
    */
   private mouseLeave(event: paper.MouseEvent): void {
-    this.hovering = false;
+    this.scrollbarHovering = false;
     if (!this.dragging) {
       this.project.view.element.style.cursor = 'default';
       this.setNormal();
@@ -429,7 +505,7 @@ export class ScrollbarComponent extends paper.Group {
    * Handler for mouse enter event.
    */
   private mouseEnter(): void {
-    this.hovering = true;
+    this.scrollbarHovering = true;
     if (!this.dragging) {
       this.project.view.element.style.cursor = 'pointer';
     }
@@ -509,10 +585,9 @@ export class ScrollbarComponent extends paper.Group {
   private changeContentPosition(): void {
     const { content, contentOffsetStart, contentOffsetEnd } = this.scrollable;
     const contentMaxPosition = this.containerSize - (content.bounds[this.dimension] as number);
-    const contentDistance = contentMaxPosition - (contentOffsetStart || DEFAULT_SCROLLABLE_OFFSET)
-      - (contentOffsetEnd || DEFAULT_SCROLLABLE_OFFSET) * 2;
+    const contentDistance = contentMaxPosition - contentOffsetStart! - contentOffsetEnd! * 2;
     (content.position[this.axis] as number) = (this.scrollAmount * contentDistance) + this.contentInitialPosition
-      + (contentOffsetStart || DEFAULT_SCROLLABLE_OFFSET);
+      + contentOffsetStart!;
   }
 
   /**
@@ -523,21 +598,31 @@ export class ScrollbarComponent extends paper.Group {
     let offsetPoint: paper.Point;
     tool.onMouseDown = (event) => {
       this.dragging = true;
+      ScrollbarComponent.anyIsDragging = true;
       this.project.view.element.style.cursor = 'grabbing';
       offsetPoint = new paper.Point(event.downPoint.subtract(this.scrollbar.position));
     };
-    tool.onMouseUp = () => {
+    tool.onMouseUp = (event: paper.ToolEvent) => {
       this.dragging = false;
-      this.project.view.element.style.cursor = this.hovering ? 'pointer' : 'default';
+      ScrollbarComponent.anyIsDragging = false;
+      this.project.view.element.style.cursor = this.scrollbarHovering ? 'pointer' : 'default';
+      if (!this.containerHovering) {
+        this.visible = false;
+        this.resetDefaultTool();
+        this.setNormal();
+      } else if (!this.scrollbarHovering) {
+        this.setNormal();
+      }
     };
     tool.onMouseDrag = (event: paper.ToolEvent) => {
       this.setActive();
+      this.visible = true;
       return this.isHorizontal
         ? this.changeScrollAndContentPosition(event.point.x - offsetPoint.x)
         : this.changeScrollAndContentPosition(event.point.y - offsetPoint.y);
     };
-    // arrowKeyDown tool is inactive while hovering on the scrollbar and scrollbarDrag is active. this handles keyDown
-    // events
+    // arrowKeyDown tool is inactive while hovering on the scrollbar and scrollbarDrag tool is active. this handles
+    // keyDown events
     tool.onKeyDown = (event) => {
       this.moveByKeyDown(event);
       this.activateDefaultTool();
@@ -561,11 +646,12 @@ export class ScrollbarComponent extends paper.Group {
    * @param event {paper.KeyEvent}
    */
   private moveByKeyDown(event: paper.KeyEvent) {
-    const validKeyPress = this.isHorizontal
-      ? event.key === 'left' || event.key === 'right'
-      : event.key === 'up' || event.key === 'down';
-    if (validKeyPress) {
-      const movementAmount = Math.floor(this.getProportionalLength());
+    const horizontalKeys = event.key === 'left' || event.key === 'right';
+    const verticalKeys = event.key === 'up' || event.key === 'down';
+    const keyPressDirection = (horizontalKeys && 'horizontal') || (verticalKeys && 'vertical');
+
+    if (keyPressDirection === this.direction) {
+      const movementAmount = Math.floor(this.getProportionalLength()) / 3;
       event.preventDefault();
       this.setActiveContinuously();
       switch (event.key) {
@@ -582,6 +668,8 @@ export class ScrollbarComponent extends paper.Group {
           this.changeScrollAndContentPosition(this.scrollbar.position.x + movementAmount);
           break;
       }
+    } else if (keyPressDirection === ScrollbarComponent.defaultScrollbarDirection) {
+      ScrollbarComponent._defaultScrollbar!.moveByKeyDown(event);
     }
   }
 

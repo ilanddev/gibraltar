@@ -21,69 +21,91 @@ export class VmBasicDemoComponent implements AfterViewInit {
     proj1.activate();
     // tslint:disable-next-line
     new VmComponent({
-      name: 'ubuntu',
       uuid: '',
-      operatingSystem: 'ubuntu64Guest'
+      name: 'ubuntu',
+      vapp_uuid: '',
+      operatingSystem: 'ubuntu64Guest',
+      vnics: []
     }, new paper.Point(15, 15), true);
     // tslint:disable-next-line
     new VmComponent({
-      name: 'fedora',
       uuid: '',
-      operatingSystem: 'fedora64Guest'
+      name: 'fedora',
+      vapp_uuid: '',
+      operatingSystem: 'fedora64Guest',
+      vnics: []
     }, new paper.Point(15, 55), true);
     // tslint:disable-next-line
     new VmComponent({
-      name: 'windows',
       uuid: '',
-      operatingSystem: 'windows7Guest'
+      name: 'windows',
+      vapp_uuid: '',
+      operatingSystem: 'windows7Guest',
+      vnics: []
     }, new paper.Point(15, 95), true);
     // tslint:disable-next-line
     new VmComponent({
-      name: 'windows xp',
       uuid: '',
-      operatingSystem: 'winXPHomeGuest'
+      name: 'windows xp',
+      vapp_uuid: '',
+      operatingSystem: 'winXPHomeGuest',
+      vnics: []
     }, new paper.Point(15, 135), true);
     // tslint:disable-next-line
     new VmComponent({
-      name: 'debian',
       uuid: '',
-      operatingSystem: 'debian8Guest'
+      name: 'debian',
+      vapp_uuid: '',
+      operatingSystem: 'debian8Guest',
+      vnics: []
     }, new paper.Point(15, 175), true);
     // tslint:disable-next-line
     new VmComponent({
-      name: 'redhat',
       uuid: '',
-      operatingSystem: 'redhatGuest'
+      name: 'redhat',
+      vapp_uuid: '',
+      operatingSystem: 'redhatGuest',
+      vnics: []
     }, new paper.Point(15, 215), true);
     // tslint:disable-next-line
     new VmComponent({
-      name: 'generic linux',
       uuid: '',
-      operatingSystem: 'other24xLinux64Guest'
+      name: 'generic linux',
+      vapp_uuid: '',
+      operatingSystem: 'other24xLinux64Guest',
+      vnics: []
     }, new paper.Point(15, 255), true);
     // tslint:disable-next-line
     new VmComponent({
-      name: 'centos',
       uuid: '',
-      operatingSystem: 'centos64Guest'
+      name: 'centos',
+      vapp_uuid: '',
+      operatingSystem: 'centos64Guest',
+      vnics: []
     }, new paper.Point(15, 295), true);
     // tslint:disable-next-line
     new VmComponent({
-      name: 'free bsd',
       uuid: '',
-      operatingSystem: 'freebsd64Guest'
+      name: 'free bsd',
+      vapp_uuid: '',
+      operatingSystem: 'freebsd64Guest',
+      vnics: []
     }, new paper.Point(15, 335), true);
     // tslint:disable-next-line
     new VmComponent({
-      name: 'core os',
       uuid: '',
-      operatingSystem: 'coreos64Guest'
+      name: 'core os',
+      vapp_uuid: '',
+      operatingSystem: 'coreos64Guest',
+      vnics: []
     }, new paper.Point(15, 375), true);
     // tslint:disable-next-line
     new VmComponent({
-      name: 'generic operating system with long name',
       uuid: '',
-      operatingSystem: 'other' as OperatingSystem
+      name: 'generic operating system with long name',
+      vapp_uuid: '',
+      operatingSystem: 'other' as OperatingSystem,
+      vnics: []
     }, new paper.Point(15, 415), true);
   }
 

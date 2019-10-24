@@ -19,6 +19,9 @@ export class Gibraltar {
       this.canvas = el as HTMLCanvasElement;
     }
     paper.setup(this.canvas);
+    // apply this setting globally to applicable PaperJS types, so child components behave relatively to their parent
+    // component. disable on an individual basis by setting the item's applyMatrix property to `true`
+    paper.settings.applyMatrix = false;
   }
 
 }

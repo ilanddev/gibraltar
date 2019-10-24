@@ -24,7 +24,6 @@ export class IconLabelComponent extends LabelComponent {
   constructor(protected _text: string, symbolPromise: Promise<paper.Symbol>,
               protected _point: paper.Point = new paper.Point(0, 0)) {
     super(_text, _point);
-    this.applyMatrix = false;
     this.pivot = new paper.Point(0, 0);
     const self = this;
     // tslint:disable-next-line:no-floating-promises
